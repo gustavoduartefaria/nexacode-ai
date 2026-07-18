@@ -5,7 +5,7 @@ import CadastroClient from "./cadastro-client";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Criar conta | NexaCode AI",
+  title: "Criar conta",
   description: "Crie seu perfil de aprendizagem e personalize sua trilha de JavaScript.",
 };
 

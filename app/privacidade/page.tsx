@@ -3,7 +3,7 @@ import { ArrowLeft, Code2, Database, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacidade | NexaCode AI",
+  title: "Privacidade",
   description: "Como o NexaCode AI trata seus dados e preferências.",
 };
 

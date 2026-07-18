@@ -3,7 +3,7 @@ import { ArrowLeft, Code2, Scale, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Termos de uso | NexaCode AI",
+  title: "Termos de uso",
   description: "Termos de uso da plataforma educacional NexaCode AI.",
 };
 
