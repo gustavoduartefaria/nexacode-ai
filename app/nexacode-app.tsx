@@ -29,10 +29,12 @@ import {
   Target,
   Terminal,
   Trophy,
+  UserPlus,
   UserRound,
   X,
   Zap,
 } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   allLessons,
@@ -1052,9 +1054,15 @@ export default function NexaCodeApp() {
           <p>Continue construindo constância, prática e profundidade técnica.</p>
         </div>
         {!profileEditing && (
-          <button className="button button-glass" onClick={() => setProfileEditing(true)}>
-            Editar perfil
-          </button>
+          <div className="profile-actions">
+            <Link className="button button-primary" href="/cadastro">
+              <UserPlus size={16} />
+              Completar conta
+            </Link>
+            <button className="button button-glass" onClick={() => setProfileEditing(true)}>
+              Editar nome rápido
+            </button>
+          </div>
         )}
       </section>
 
@@ -1190,6 +1198,14 @@ export default function NexaCodeApp() {
             );
           })}
         </nav>
+        <Link className="account-sidebar-link" href="/cadastro">
+          <UserPlus size={17} />
+          <span>
+            <strong>Minha conta</strong>
+            <small>Perfil e objetivos</small>
+          </span>
+          <ChevronRight size={16} />
+        </Link>
         <div className="daily-mission">
           <div className="daily-icon">
             <Rocket size={20} />
@@ -1264,6 +1280,10 @@ export default function NexaCodeApp() {
                 <Command size={12} /> K
               </kbd>
             </button>
+            <Link className="topbar-account-link" href="/cadastro">
+              <UserPlus size={17} />
+              <span>Minha conta</span>
+            </Link>
             <div className="notification-wrap">
               <button
                 className="icon-button notification-button"

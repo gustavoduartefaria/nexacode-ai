@@ -52,3 +52,31 @@ test("o laboratório usa execução isolada e limite de tempo", async () => {
   assert.match(app, /3000/);
   assert.match(app, /Execução interrompida/);
 });
+
+test("cadastro tem três etapas, persistência segura e páginas legais", async () => {
+  const [page, client, api, schema, hosting, terms, privacy] = await Promise.all([
+    read("app/cadastro/page.tsx"),
+    read("app/cadastro/cadastro-client.tsx"),
+    read("app/api/profile/route.ts"),
+    read("db/schema.ts"),
+    read(".openai/hosting.json"),
+    read("app/termos/page.tsx"),
+    read("app/privacidade/page.tsx"),
+  ]);
+  const hostingConfig = JSON.parse(hosting);
+
+  assert.match(page, /getChatGPTUser/);
+  assert.match(page, /getStudentProfile/);
+  assert.match(client, /ETAPA 01 · IDENTIDADE/);
+  assert.match(client, /ETAPA 02 · OBJETIVO/);
+  assert.match(client, /ETAPA 03 · ROTINA/);
+  assert.match(client, /nexacode-device-profile-v1/);
+  assert.match(client, /\/api\/profile/);
+  assert.doesNotMatch(client, /type="password"/);
+  assert.match(api, /acceptedTerms/);
+  assert.match(api, /onConflictDoUpdate/);
+  assert.match(schema, /student_profiles/);
+  assert.equal(hostingConfig.d1, "DB");
+  assert.match(terms, /O NexaCode não recebe nem armazena sua senha/);
+  assert.match(privacy, /Não vendemos seus dados/);
+});

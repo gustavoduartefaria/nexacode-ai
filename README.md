@@ -15,12 +15,23 @@ Plataforma mobile-first para aprender JavaScript construindo. Funciona como site
 - Code Lab com execução isolada em Web Worker.
 - 6 desafios progressivos com saída validada e recompensas em XP.
 - NEX, mentor didático local para explicar conceitos, analisar código e oferecer pistas.
+- Página de cadastro em três etapas, perfil online persistente e modo local transparente.
 - Busca de aulas, progresso por módulo, sequência de estudo e perfil local.
 - Instalação no Android, iPhone e computador.
 - Cache offline após o primeiro carregamento.
 - Respeito à preferência de movimento reduzido.
 
 O mentor é um assistente inteligente local e baseado no conteúdo do curso. Ele não envia código ou perguntas para serviços externos e não inventa ser um modelo remoto.
+
+## Criar ou atualizar sua conta
+
+1. Abra o NexaCode e selecione **Minha conta** na barra lateral ou superior.
+2. Informe seu nome, usuário e e-mail.
+3. Escolha seu objetivo, nível atual e frequência de estudo.
+4. Leia e aceite os Termos de Uso e a Política de Privacidade.
+5. Selecione **Criar minha conta**.
+
+Na versão online privada, o e-mail é verificado pela plataforma e o perfil é salvo no banco do aplicativo. O NexaCode não recebe nem armazena sua senha. No pacote executado no computador, o perfil fica somente naquele navegador e não é sincronizado.
 
 ## Abrir no Windows
 
