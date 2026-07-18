@@ -1,0 +1,41 @@
+{
+  "name": "NexaCode AI — Aprenda JavaScript",
+  "short_name": "NexaCode",
+  "description": "Trilha prática de JavaScript com laboratório, desafios e mentor inteligente local.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#06080d",
+  "theme_color": "#06080d",
+  "lang": "pt-BR",
+  "categories": ["education", "productivity", "developer"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Abrir Code Lab",
+      "short_name": "Code Lab",
+      "url": "/",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Conversar com NEX",
+      "short_name": "Mentor",
+      "url": "/",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
