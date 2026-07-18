@@ -2,6 +2,12 @@
 
 Plataforma mobile-first para aprender JavaScript construindo. Funciona como site e como aplicativo instalável (PWA), sem cadastro obrigatório.
 
+## Links oficiais
+
+- Código: https://github.com/gustavoduartefaria/nexacode-ai
+- Download mais recente: https://github.com/gustavoduartefaria/nexacode-ai/releases/latest
+- Aplicativo online privado: https://nexacode-js-ai.vanessaniconovato.chatgpt.site
+
 ## O que existe no produto
 
 - Trilha com 8 módulos e 24 aulas, do zero a projetos reais.
