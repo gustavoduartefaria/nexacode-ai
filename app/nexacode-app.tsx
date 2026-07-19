@@ -5,7 +5,6 @@ import {
   BookOpen,
   Bot,
   BrainCircuit,
-  Braces,
   Check,
   ChevronRight,
   CirclePlay,
@@ -36,11 +35,15 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { NexaMark } from "@/app/nexa-brand";
 import {
   allLessons,
   challenges,
-  courseModules,
-  totalCourseMinutes,
+  languages,
+  lessonsByLanguage,
+  modulesByLanguage,
+  totalMinutesByLanguage,
+  type LanguageId,
   type Lesson,
 } from "@/lib/course-data";
 import {
@@ -59,6 +62,7 @@ type ProgressState = {
   xp: number;
   streak: number;
   lastVisit: string;
+  activeLanguage: LanguageId;
 };
 
 type ChatMessage = {
@@ -83,6 +87,7 @@ const initialProgress: ProgressState = {
   xp: 0,
   streak: 1,
   lastVisit: todayKey(),
+  activeLanguage: "javascript",
 };
 
 const navItems: Array<{
@@ -92,7 +97,7 @@ const navItems: Array<{
   icon: typeof Home;
 }> = [
   { id: "home", label: "Visão geral", shortLabel: "Início", icon: Home },
-  { id: "learn", label: "Trilha JavaScript", shortLabel: "Trilha", icon: BookOpen },
+  { id: "learn", label: "Trilhas de código", shortLabel: "Trilhas", icon: BookOpen },
   { id: "lab", label: "Code Lab", shortLabel: "Laboratório", icon: Code2 },
   { id: "mentor", label: "Mentor IA", shortLabel: "Mentor", icon: Bot },
   { id: "progress", label: "Meu progresso", shortLabel: "Progresso", icon: Trophy },
@@ -118,13 +123,12 @@ function formatDuration(minutes: number) {
 function Logo() {
   return (
     <div className="brand">
-      <div className="brand-mark" aria-hidden="true">
-        <span>N</span>
-        <i />
-      </div>
+      <NexaMark />
       <div>
-        <strong>NexaCode</strong>
-        <span>JavaScript intelligence lab</span>
+        <strong>
+          NexaCode <i>AI</i>
+        </strong>
+        <span>multilanguage intelligence lab</span>
       </div>
     </div>
   );
@@ -156,6 +160,48 @@ function DifficultyBadge({ value }: { value: Lesson["difficulty"] }) {
     <span className={`difficulty difficulty-${value.toLowerCase().replace("á", "a")}`}>
       {value}
     </span>
+  );
+}
+
+function LanguageSwitcher({
+  active,
+  onChange,
+  compact = false,
+}: {
+  active: LanguageId;
+  onChange: (language: LanguageId) => void;
+  compact?: boolean;
+}) {
+  return (
+    <div
+      className={classNames("language-switcher", compact && "language-switcher-compact")}
+      aria-label="Escolher linguagem"
+    >
+      {languages.map((language) => (
+        <button
+          key={language.id}
+          type="button"
+          className={active === language.id ? "active" : ""}
+          onClick={() => onChange(language.id)}
+          aria-pressed={active === language.id}
+          style={
+            {
+              "--language-accent": language.accent,
+              "--language-soft": language.accentSoft,
+            } as React.CSSProperties
+          }
+        >
+          <span>{language.shortName}</span>
+          {!compact && (
+            <div>
+              <strong>{language.name}</strong>
+              <small>{language.tagline}</small>
+            </div>
+          )}
+          <i />
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -201,12 +247,25 @@ export default function NexaCodeApp() {
   const runToken = useRef(0);
   const messageToken = useRef(1);
 
+  const activeLanguage =
+    languages.find((language) => language.id === progress.activeLanguage) ?? languages[0];
+  const activeModules = modulesByLanguage[activeLanguage.id];
+  const activeLessons = lessonsByLanguage[activeLanguage.id];
   const currentLesson =
-    allLessons.find((current) => current.id === lessonId) ?? allLessons[0];
+    allLessons.find((current) => current.id === lessonId) ?? activeLessons[0];
+  const currentLanguage =
+    languages.find((language) => language.id === currentLesson.language) ??
+    activeLanguage;
   const nextLesson =
-    allLessons.find((current) => !progress.completedLessons.includes(current.id)) ??
-    allLessons[allLessons.length - 1];
+    activeLessons.find((current) => !progress.completedLessons.includes(current.id)) ??
+    activeLessons[activeLessons.length - 1];
+  const activeCompletedLessons = activeLessons.filter((lessonItem) =>
+    progress.completedLessons.includes(lessonItem.id),
+  ).length;
   const completion = Math.round(
+    (activeCompletedLessons / activeLessons.length) * 100,
+  );
+  const globalCompletion = Math.round(
     (progress.completedLessons.length / allLessons.length) * 100,
   );
   const learningScore = calculateLearningScore(
@@ -282,7 +341,30 @@ export default function NexaCodeApp() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const openCodeLab = () => {
+    if (activeLanguage.id !== "javascript") {
+      setToast(
+        `O runtime do navegador executa JavaScript; as missões de ${activeLanguage.name} continuam guiadas nas aulas.`,
+      );
+    }
+    navigate("lab");
+  };
+
+  const selectLanguage = (language: LanguageId) => {
+    const firstLesson = lessonsByLanguage[language][0];
+    setProgress((current) => ({ ...current, activeLanguage: language }));
+    if (firstLesson) setLessonId(firstLesson.id);
+    setToast(`${languages.find((item) => item.id === language)?.name} selecionado`);
+  };
+
   const openLesson = (id: string) => {
+    const selectedLesson = allLessons.find((item) => item.id === id);
+    if (selectedLesson) {
+      setProgress((current) => ({
+        ...current,
+        activeLanguage: selectedLesson.language,
+      }));
+    }
     setLessonId(id);
     setQuizChoice(null);
     setQuizChecked(false);
@@ -448,13 +530,21 @@ export default function NexaCodeApp() {
 
   const renderHome = () => (
     <div className="view-stack view-enter">
+      <section className="language-hub">
+        <div>
+          <span className="section-kicker">ESCOLHA SUA ESPECIALIZAÇÃO</span>
+          <strong>Uma plataforma, três caminhos de engenharia.</strong>
+        </div>
+        <LanguageSwitcher active={activeLanguage.id} onChange={selectLanguage} />
+      </section>
+
       <section className="hero-panel">
         <div className="hero-grid" aria-hidden="true" />
         <div className="hero-orbit" aria-hidden="true">
           <span className="orbit orbit-one" />
           <span className="orbit orbit-two" />
           <span className="orbit-core">
-            <Braces size={40} />
+            <strong>{activeLanguage.shortName}</strong>
           </span>
         </div>
         <div className="hero-copy">
@@ -462,21 +552,20 @@ export default function NexaCodeApp() {
             <i /> Sistema de aprendizagem ativo
           </span>
           <h1>
-            Domine JavaScript.
+            Domine {activeLanguage.name}.
             <span>Pense como quem constrói.</span>
           </h1>
-          <p>
-            Uma jornada prática que combina conceitos visuais, código executável,
-            desafios reais e orientação inteligente no momento certo.
-          </p>
+          <p>{activeLanguage.description}</p>
           <div className="hero-actions">
             <button className="button button-primary" onClick={() => openLesson(nextLesson.id)}>
               <CirclePlay size={19} />
               Continuar missão
             </button>
-            <button className="button button-glass" onClick={() => navigate("lab")}>
+            <button className="button button-glass" onClick={openCodeLab}>
               <Terminal size={18} />
-              Abrir Code Lab
+              {activeLanguage.id === "javascript"
+                ? "Abrir Code Lab"
+                : "Ver ambiente de prática"}
             </button>
           </div>
           <div className="hero-proof">
@@ -490,7 +579,7 @@ export default function NexaCodeApp() {
         </div>
         <div className="hero-progress">
           <ProgressRing value={completion} />
-          <span>{progress.completedLessons.length} aulas dominadas</span>
+          <span>{activeCompletedLessons} aulas dominadas em {activeLanguage.name}</span>
         </div>
       </section>
 
@@ -550,7 +639,7 @@ export default function NexaCodeApp() {
           </button>
         </div>
         <div className="module-strip">
-          {courseModules.slice(0, 5).map((module, index) => {
+          {activeModules.slice(0, 5).map((module, index) => {
             const completed = module.lessons.filter((item) =>
               progress.completedLessons.includes(item.id),
             ).length;
@@ -598,7 +687,7 @@ export default function NexaCodeApp() {
               <span />
               <span />
               <span />
-              <small>mission.js</small>
+              <small>{`mission.${activeLanguage.fileExtension}`}</small>
             </div>
             <pre>
               <code>{nextLesson.code.split("\n").slice(0, 5).join("\n")}</code>
@@ -641,18 +730,21 @@ export default function NexaCodeApp() {
           <span className="eyebrow">
             <GraduationCap size={15} /> TRILHA ESTRUTURADA
           </span>
-          <h1>JavaScript do zero ao produto real.</h1>
+          <h1>{activeLanguage.name} do fundamento ao produto real.</h1>
           <p>
-            {allLessons.length} aulas práticas · {formatDuration(totalCourseMinutes)} ·
-            progresso no seu ritmo
+            {activeLessons.length} aulas práticas ·{" "}
+            {formatDuration(totalMinutesByLanguage[activeLanguage.id])} · progresso
+            independente
           </p>
         </div>
         <ProgressRing value={completion} size="small" />
       </section>
 
+      <LanguageSwitcher active={activeLanguage.id} onChange={selectLanguage} />
+
       <div className="learning-path">
         <span className="path-line" aria-hidden="true" />
-        {courseModules.map((module) => {
+        {activeModules.map((module) => {
           const completedCount = module.lessons.filter((item) =>
             progress.completedLessons.includes(item.id),
           ).length;
@@ -716,10 +808,13 @@ export default function NexaCodeApp() {
         <section className="page-intro compact">
           <div>
             <span className="eyebrow">
-              <Terminal size={15} /> AMBIENTE ISOLADO
+              <Terminal size={15} /> JAVASCRIPT RUNTIME
             </span>
-            <h1>Code Lab</h1>
-            <p>Escreva, execute, observe e ajuste. É assim que fluência nasce.</p>
+            <h1>Code Lab · JavaScript</h1>
+            <p>
+              Execução real e isolada no navegador. Python e C++ usam missões
+              guiadas sem simular um compilador inexistente.
+            </p>
           </div>
           <button className="button button-glass" onClick={analyzeInMentor}>
             <BrainCircuit size={17} /> Analisar com NEX
@@ -1068,7 +1163,7 @@ export default function NexaCodeApp() {
 
       <section className="score-grid">
         <article className="score-card primary-score">
-          <ProgressRing value={completion} />
+          <ProgressRing value={globalCompletion} />
           <div>
             <span>PROGRESSO DA TRILHA</span>
             <h2>
@@ -1100,16 +1195,58 @@ export default function NexaCodeApp() {
         </article>
       </section>
 
+      <section className="language-progress-grid">
+        {languages.map((language) => {
+          const languageLessons = lessonsByLanguage[language.id];
+          const completed = languageLessons.filter((lessonItem) =>
+            progress.completedLessons.includes(lessonItem.id),
+          ).length;
+          const value = Math.round((completed / languageLessons.length) * 100);
+          return (
+            <button
+              key={language.id}
+              onClick={() => {
+                selectLanguage(language.id);
+                navigate("learn");
+              }}
+              style={
+                {
+                  "--language-accent": language.accent,
+                  "--language-soft": language.accentSoft,
+                } as React.CSSProperties
+              }
+            >
+              <span>{language.shortName}</span>
+              <div>
+                <small>TRILHA {language.name.toUpperCase()}</small>
+                <strong>
+                  {completed}/{languageLessons.length} aulas
+                </strong>
+                <i>
+                  <b style={{ width: `${value}%` }} />
+                </i>
+              </div>
+              <em>{value}%</em>
+            </button>
+          );
+        })}
+      </section>
+
       <section className="progress-details">
         <article className="module-progress-card">
           <div className="section-heading">
             <div>
               <span className="section-kicker">DOMÍNIO POR MÓDULO</span>
-              <h2>Mapa de competências</h2>
+              <h2>Mapa de {activeLanguage.name}</h2>
             </div>
+            <LanguageSwitcher
+              active={activeLanguage.id}
+              onChange={selectLanguage}
+              compact
+            />
           </div>
           <div className="skill-bars">
-            {courseModules.map((module) => {
+            {activeModules.map((module) => {
               const count = module.lessons.filter((item) =>
                 progress.completedLessons.includes(item.id),
               ).length;
@@ -1198,6 +1335,14 @@ export default function NexaCodeApp() {
             );
           })}
         </nav>
+        <div className="sidebar-language-dock">
+          <span className="nav-label">LINGUAGEM ATIVA</span>
+          <LanguageSwitcher
+            active={activeLanguage.id}
+            onChange={selectLanguage}
+            compact
+          />
+        </div>
         <Link className="account-sidebar-link" href="/cadastro">
           <UserPlus size={17} />
           <span>
@@ -1262,7 +1407,7 @@ export default function NexaCodeApp() {
           <div className="topbar-context">
             <span>
               {view === "home"
-                ? "CENTRAL DE APRENDIZAGEM"
+                ? `CENTRAL · ${activeLanguage.name.toUpperCase()}`
                 : navItems.find((item) => item.id === view)?.label.toUpperCase()}
             </span>
             <small>
@@ -1349,7 +1494,9 @@ export default function NexaCodeApp() {
           <section className="lesson-modal">
             <div className="lesson-modal-header">
               <div>
-                <span className="section-kicker">{currentLesson.moduleTitle}</span>
+                <span className="section-kicker">
+                  {currentLanguage.shortName} · {currentLesson.moduleTitle}
+                </span>
                 <h2>{currentLesson.title}</h2>
                 <p>
                   {currentLesson.duration} min · {currentLesson.difficulty}
@@ -1380,7 +1527,7 @@ export default function NexaCodeApp() {
                   <span />
                   <span />
                   <span />
-                  <small>exemplo.js</small>
+                  <small>{`exemplo.${currentLanguage.fileExtension}`}</small>
                   <button
                     onClick={async () => {
                       await navigator.clipboard.writeText(currentLesson.code);
@@ -1401,12 +1548,20 @@ export default function NexaCodeApp() {
                   <p>{currentLesson.mission}</p>
                 </div>
                 <button
-                  onClick={() => {
-                    setLessonOpen(false);
-                    navigate("lab");
+                  onClick={async () => {
+                    if (currentLesson.language === "javascript") {
+                      setLessonOpen(false);
+                      navigate("lab");
+                      return;
+                    }
+                    await navigator.clipboard.writeText(currentLesson.mission);
+                    setToast("Micromissão copiada para você praticar");
                   }}
                 >
-                  Praticar no Lab <ChevronRight size={16} />
+                  {currentLesson.language === "javascript"
+                    ? "Praticar no Lab"
+                    : "Copiar micromissão"}{" "}
+                  <ChevronRight size={16} />
                 </button>
               </div>
               <div className="quiz-block">
@@ -1512,7 +1667,9 @@ export default function NexaCodeApp() {
                   <div>
                     <strong>{item.title}</strong>
                     <small>
-                      {item.moduleTitle} · {item.duration} min
+                      {languages.find((language) => language.id === item.language)
+                        ?.shortName ?? ""}{" "}
+                      · {item.moduleTitle} · {item.duration} min
                     </small>
                   </div>
                   <ChevronRight size={17} />

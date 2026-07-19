@@ -1,4 +1,4 @@
-import type { Lesson } from "./course-data";
+import type { LanguageId, Lesson } from "./course-data";
 
 export type CodeInsight = {
   level: "success" | "warning" | "idea";
@@ -106,11 +106,21 @@ export function inspectCode(code: string): CodeInsight[] {
 
 export function buildMentorAnswer(
   question: string,
-  lesson: Lesson,
+  lesson: Lesson & { language?: LanguageId },
   code: string,
 ): MentorAnswer {
   const normalized = question.toLocaleLowerCase("pt-BR");
-  const firstInsight = inspectCode(code)[0];
+  const languageName =
+    lesson.language === "python" ? "Python" : lesson.language === "cpp" ? "C++" : "JavaScript";
+  const firstInsight =
+    lesson.language && lesson.language !== "javascript"
+      ? {
+          level: "idea" as const,
+          title: `Depuração em ${languageName}`,
+          detail:
+            "Compare a primeira mensagem do interpretador ou compilador com a linha indicada e reduza o exemplo até isolar a causa.",
+        }
+      : inspectCode(code)[0];
 
   if (
     normalized.includes("erro") ||
@@ -124,7 +134,10 @@ export function buildMentorAnswer(
         firstInsight.level === "warning"
           ? `${firstInsight.detail} Leia a primeira mensagem do console, localize a linha indicada e confirme os valores imediatamente antes dela.`
           : "A sintaxe parece válida. Agora verifique se as entradas têm os valores esperados e se cada condição realmente pode ser alcançada.",
-      example: `console.log({ etapa: "antes da regra", valor });`,
+      example:
+        lesson.language === "python" || lesson.language === "cpp"
+          ? lesson.code
+          : `console.log({ etapa: "antes da regra", valor });`,
       nextStep:
         "Execute de novo com um console.log antes do ponto que falha e me conte o primeiro valor inesperado.",
     };
@@ -179,6 +192,15 @@ export function buildMentorAnswer(
   }
 
   if (normalized.includes("array")) {
+    if (lesson.language && lesson.language !== "javascript") {
+      return {
+        headline: `Coleções em ${languageName}`,
+        message:
+          "Escolha a estrutura pelo comportamento: ordem, mutabilidade, busca e propriedade dos dados. Depois teste com uma coleção mínima e um caso de limite.",
+        example: lesson.code,
+        nextStep: lesson.mission,
+      };
+    }
     return {
       headline: "Arrays são fluxos de dados",
       message:
@@ -211,7 +233,7 @@ export function buildMentorAnswer(
 
   return {
     headline: "Vamos transformar a dúvida em experimento",
-    message: `Você está estudando ${lesson.title}. Formule uma hipótese, mude apenas uma coisa no código e observe o resultado. ${firstInsight.detail}`,
+    message: `Você está estudando ${lesson.title} em ${languageName}. Formule uma hipótese, mude apenas uma coisa no código e observe o resultado. ${firstInsight.detail}`,
     nextStep:
       "Pergunte “o que espero ver no console?” e execute o menor exemplo capaz de responder.",
   };

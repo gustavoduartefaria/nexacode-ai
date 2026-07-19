@@ -1,32 +1,19 @@
-export type Difficulty = "Iniciante" | "Intermediário" | "Avançado";
+import { cppModules, programmingLanguages, pythonModules } from "./multilanguage-data";
+import type {
+  CourseModule,
+  Difficulty,
+  LanguageId,
+  Lesson,
+  ProgrammingLanguage,
+} from "./course-types";
 
-export type Lesson = {
-  id: string;
-  title: string;
-  summary: string;
-  duration: number;
-  difficulty: Difficulty;
-  theory: string;
-  analogy: string;
-  code: string;
-  mission: string;
-  quiz: {
-    question: string;
-    options: string[];
-    answer: number;
-    explanation: string;
-  };
-};
-
-export type CourseModule = {
-  id: string;
-  number: string;
-  title: string;
-  subtitle: string;
-  color: string;
-  icon: string;
-  lessons: Lesson[];
-};
+export type {
+  CourseModule,
+  Difficulty,
+  LanguageId,
+  Lesson,
+  ProgrammingLanguage,
+} from "./course-types";
 
 const lesson = (
   id: string,
@@ -55,9 +42,10 @@ const lesson = (
   quiz: { question, options, answer, explanation },
 });
 
-export const courseModules: CourseModule[] = [
+export const javascriptModules: CourseModule[] = [
   {
     id: "fundamentos",
+    language: "javascript",
     number: "01",
     title: "Fundamentos",
     subtitle: "A base sólida para pensar como programador",
@@ -127,6 +115,7 @@ console.log("Entrada liberada?", podeEntrar);`,
   },
   {
     id: "logica",
+    language: "javascript",
     number: "02",
     title: "Lógica & Fluxo",
     subtitle: "Transforme regras em decisões claras",
@@ -208,6 +197,7 @@ try {
   },
   {
     id: "funcoes",
+    language: "javascript",
     number: "03",
     title: "Funções",
     subtitle: "Código reutilizável, pequeno e expressivo",
@@ -289,6 +279,7 @@ console.log(proximo());`,
   },
   {
     id: "dados",
+    language: "javascript",
     number: "04",
     title: "Dados",
     subtitle: "Arrays e objetos trabalhando juntos",
@@ -366,6 +357,7 @@ console.log(nome, atualizado);`,
   },
   {
     id: "dom",
+    language: "javascript",
     number: "05",
     title: "DOM & Interface",
     subtitle: "Dê vida às páginas da web",
@@ -443,6 +435,7 @@ botao?.addEventListener("click", () => {
   },
   {
     id: "assincrono",
+    language: "javascript",
     number: "06",
     title: "Assíncrono",
     subtitle: "Promessas, APIs e dados do mundo real",
@@ -522,6 +515,7 @@ espera
   },
   {
     id: "moderno",
+    language: "javascript",
     number: "07",
     title: "JavaScript Moderno",
     subtitle: "Código escalável e fácil de manter",
@@ -603,6 +597,7 @@ console.log(usuario.pontos, atualizado.pontos);`,
   },
   {
     id: "projetos",
+    language: "javascript",
     number: "08",
     title: "Projetos Reais",
     subtitle: "Transforme conhecimento em portfólio",
@@ -690,6 +685,20 @@ async function carregar() {
     ],
   },
 ];
+
+export const languages: ProgrammingLanguage[] = programmingLanguages;
+
+export const courseModules: CourseModule[] = [
+  ...javascriptModules,
+  ...pythonModules,
+  ...cppModules,
+];
+
+export const modulesByLanguage: Record<LanguageId, CourseModule[]> = {
+  javascript: javascriptModules,
+  python: pythonModules,
+  cpp: cppModules,
+};
 
 export type Challenge = {
   id: string;
@@ -794,13 +803,35 @@ export const challenges: Challenge[] = [
 export const allLessons = courseModules.flatMap((module) =>
   module.lessons.map((currentLesson) => ({
     ...currentLesson,
+    language: module.language,
     moduleId: module.id,
     moduleTitle: module.title,
     moduleColor: module.color,
   })),
 );
 
+export const lessonsByLanguage = {
+  javascript: allLessons.filter((lessonItem) => lessonItem.language === "javascript"),
+  python: allLessons.filter((lessonItem) => lessonItem.language === "python"),
+  cpp: allLessons.filter((lessonItem) => lessonItem.language === "cpp"),
+} satisfies Record<LanguageId, typeof allLessons>;
+
 export const totalCourseMinutes = allLessons.reduce(
   (total, currentLesson) => total + currentLesson.duration,
   0,
 );
+
+export const totalMinutesByLanguage: Record<LanguageId, number> = {
+  javascript: lessonsByLanguage.javascript.reduce(
+    (total, currentLesson) => total + currentLesson.duration,
+    0,
+  ),
+  python: lessonsByLanguage.python.reduce(
+    (total, currentLesson) => total + currentLesson.duration,
+    0,
+  ),
+  cpp: lessonsByLanguage.cpp.reduce(
+    (total, currentLesson) => total + currentLesson.duration,
+    0,
+  ),
+};
