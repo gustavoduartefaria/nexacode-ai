@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { NexaMark } from "@/app/nexa-brand";
 
 type AccountMode = "authenticated" | "device";
 
@@ -247,8 +248,8 @@ export default function CadastroClient({
               <span>por semana</span>
             </div>
             <div>
-              <strong>24</strong>
-              <span>aulas na trilha</span>
+              <strong>44</strong>
+              <span>aulas em 3 trilhas</span>
             </div>
             <div>
               <strong>6</strong>
@@ -277,10 +278,10 @@ export default function CadastroClient({
       <div className="signup-ambient" aria-hidden="true" />
       <aside className="signup-story">
         <Link className="signup-logo" href="/">
-          <span>N</span>
+          <NexaMark compact />
           <div>
             <strong>NexaCode</strong>
-            <small>JAVASCRIPT INTELLIGENCE LAB</small>
+            <small>MULTILANGUAGE INTELLIGENCE LAB</small>
           </div>
         </Link>
         <div className="story-copy">

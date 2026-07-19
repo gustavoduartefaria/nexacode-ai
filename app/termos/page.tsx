@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { ArrowLeft, Code2, Scale, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Scale, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import { NexaMark } from "@/app/nexa-brand";
 
 export const metadata: Metadata = {
   title: "Termos de uso",
@@ -13,7 +14,7 @@ export default function TermsPage() {
       <div className="legal-glow" aria-hidden="true" />
       <article>
         <Link className="legal-logo" href="/">
-          <Code2 size={24} />
+          <NexaMark compact />
           <span>NEXACODE</span>
           <i>AI</i>
         </Link>

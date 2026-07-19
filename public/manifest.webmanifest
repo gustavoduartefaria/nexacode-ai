@@ -1,7 +1,7 @@
 {
-  "name": "NexaCode AI — Aprenda JavaScript",
+  "name": "NexaCode AI — Aprenda JavaScript, Python e C++",
   "short_name": "NexaCode",
-  "description": "Trilha prática de JavaScript com laboratório, desafios e mentor inteligente local.",
+  "description": "Trilhas práticas de JavaScript, Python e C++ com missões, checkpoints e mentor inteligente local.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

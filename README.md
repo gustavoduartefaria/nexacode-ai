@@ -1,6 +1,6 @@
 # NexaCode AI
 
-Plataforma mobile-first para aprender JavaScript construindo. Funciona como site e como aplicativo instalável (PWA), sem cadastro obrigatório.
+Plataforma mobile-first para aprender JavaScript, Python e C++ construindo. Funciona como site e como aplicativo instalável (PWA), sem cadastro obrigatório.
 
 ## Links oficiais
 
@@ -10,9 +10,12 @@ Plataforma mobile-first para aprender JavaScript construindo. Funciona como site
 
 ## O que existe no produto
 
-- Trilha com 8 módulos e 24 aulas, do zero a projetos reais.
+- JavaScript com 8 módulos e 24 aulas, preservando todo o conteúdo original.
+- Python com 5 módulos e 10 aulas, de tipagem a automação e modelagem.
+- C++ com 5 módulos e 10 aulas, de compilação a RAII, STL e projetos.
+- Seletor de linguagem com progresso independente em cada trilha.
 - Aulas com conceito, modelo mental, código, micromissão e checkpoint.
-- Code Lab com execução isolada em Web Worker.
+- Code Lab de JavaScript com execução real e isolada em Web Worker.
 - 6 desafios progressivos com saída validada e recompensas em XP.
 - NEX, mentor didático local para explicar conceitos, analisar código e oferecer pistas.
 - Página de cadastro em três etapas, perfil online persistente e modo local transparente.
@@ -21,7 +24,7 @@ Plataforma mobile-first para aprender JavaScript construindo. Funciona como site
 - Cache offline após o primeiro carregamento.
 - Respeito à preferência de movimento reduzido.
 
-O mentor é um assistente inteligente local e baseado no conteúdo do curso. Ele não envia código ou perguntas para serviços externos e não inventa ser um modelo remoto.
+O mentor é um assistente inteligente local e baseado no conteúdo das três trilhas. Ele não envia código ou perguntas para serviços externos e não inventa ser um modelo remoto. O Code Lab executa JavaScript; Python e C++ usam exemplos, micromissões e checkpoints guiados sem simular interpretadores ou compiladores.
 
 ## Criar ou atualizar sua conta
 

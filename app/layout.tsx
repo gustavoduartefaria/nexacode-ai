@@ -32,11 +32,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: base,
     title: {
-      default: "NexaCode AI — Aprenda JavaScript construindo",
+      default: "NexaCode AI — JavaScript, Python e C++",
       template: "%s · NexaCode AI",
     },
     description:
-      "Plataforma tecnológica para aprender JavaScript com aulas práticas, laboratório de código, desafios e mentor inteligente local.",
+      "Plataforma tecnológica para aprender JavaScript, Python e C++ com aulas práticas, desafios e mentor inteligente local.",
     applicationName: "NexaCode AI",
     manifest: "/manifest.webmanifest",
     appleWebApp: {
@@ -57,24 +57,24 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: "website",
       locale: "pt_BR",
-      title: "NexaCode AI — Domine JavaScript construindo",
+      title: "NexaCode AI — Três linguagens, uma jornada de engenharia",
       description:
-        "Trilha prática, Code Lab, desafios reais e um mentor inteligente que ensina você a pensar.",
+        "JavaScript, Python e C++ em trilhas práticas com desafios e um mentor que ensina você a pensar.",
       siteName: "NexaCode AI",
       images: [
         {
           url: socialImage,
           width: 1536,
           height: 1024,
-          alt: "NexaCode AI, laboratório tecnológico de JavaScript",
+          alt: "NexaCode AI, laboratório tecnológico de JavaScript, Python e C++",
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: "NexaCode AI — Domine JavaScript construindo",
+      title: "NexaCode AI — JavaScript, Python e C++",
       description:
-        "Aprenda JavaScript com trilha prática, laboratório e orientação inteligente.",
+        "Aprenda JavaScript, Python e C++ com trilhas práticas e orientação inteligente.",
       images: [socialImage],
     },
   };
