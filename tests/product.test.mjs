@@ -100,7 +100,9 @@ test("mentor Nex usa contexto, pistas graduais, roteamento, cache e fallback loc
   assert.match(migration, /CREATE TABLE "ai_response_cache"/);
   assert.match(migration, /ENABLE ROW LEVEL SECURITY/);
   assert.match(railway, /start:railway/);
-  assert.match(migrateScript, /migrate\(drizzle\(client\)/);
+  assert.match(migrateScript, /client\.begin/);
+  assert.match(migrateScript, /CREATE TABLE IF NOT EXISTS ai_response_cache/);
+  assert.match(migrateScript, /CREATE TABLE IF NOT EXISTS mentor_attempts/);
 });
 
 test("autenticação própria protege senhas, sessões e tentativas", async () => {
