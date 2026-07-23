@@ -1,34 +1,16 @@
 import type { Metadata } from "next";
-import { chatGPTSignInPath, getChatGPTUser } from "@/app/chatgpt-auth";
-import { getStudentProfile } from "@/db/profiles";
-import CadastroClient from "./cadastro-client";
+import { redirect } from "next/navigation";
+import AuthForm from "@/app/auth-form";
+import { AuthShell } from "@/app/auth-shell";
+import { getSessionUser } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Criar conta",
-  description: "Crie seu perfil de aprendizagem e personalize sua trilha de JavaScript.",
+  description: "Crie gratuitamente seu workspace no NexaCode AI.",
 };
 
 export default async function CadastroPage() {
-  const user = await getChatGPTUser();
-  const profile = user ? await getStudentProfile(user.email) : null;
-
-  return (
-    <CadastroClient
-      mode={user ? "authenticated" : "device"}
-      verifiedEmail={user?.email ?? ""}
-      signInPath={chatGPTSignInPath("/cadastro")}
-      initialProfile={
-        profile
-          ? {
-              displayName: profile.displayName,
-              username: profile.username,
-              learningGoal: profile.learningGoal,
-              experienceLevel: profile.experienceLevel,
-              weeklyGoal: profile.weeklyGoal,
-            }
-          : null
-      }
-    />
-  );
+  if (await getSessionUser()) redirect("/app");
+  return <AuthShell><AuthForm mode="register" /></AuthShell>;
 }

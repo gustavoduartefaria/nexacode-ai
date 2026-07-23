@@ -5,95 +5,229 @@ import test from "node:test";
 const root = new URL("../", import.meta.url);
 const read = (path) => readFile(new URL(path, root), "utf8");
 
-test("o produto contém três trilhas, laboratório, mentor e progresso local", async () => {
+test("mantém as 44 aulas de JavaScript, Python e C++", async () => {
   const [app, data, multi, mentor] = await Promise.all([
     read("app/nexacode-app.tsx"),
     read("lib/course-data.ts"),
     read("lib/multilanguage-data.ts"),
     read("lib/mentor.ts"),
   ]);
-
-  assert.match(app, /new Worker/);
-  assert.match(app, /localStorage/);
-  assert.match(app, /serviceWorker/);
-  assert.match(app, /Code Lab/);
-  assert.match(app, /Mentor IA/);
-  assert.match(app, /completedChallenges/);
-  assert.match(app, /LanguageSwitcher/);
-  assert.match(app, /activeLanguage/);
-  assert.match(app, /Python e C\+\+ usam missões/);
   assert.equal((data.match(/\n      lesson\(/g) ?? []).length, 24);
-  assert.equal((data.match(/\n    id: "/g) ?? []).length >= 14, true);
   const [pythonBlock, cppBlock] = multi.split("export const cppModules");
   assert.equal((pythonBlock.match(/\n      lesson\(/g) ?? []).length, 10);
   assert.equal((cppBlock.match(/\n      lesson\(/g) ?? []).length, 10);
-  assert.equal((multi.match(/language: "python"/g) ?? []).length, 5);
-  assert.equal((multi.match(/language: "cpp"/g) ?? []).length, 5);
-  assert.match(mentor, /inspectCode/);
+  assert.match(app, /accessibleLessonIds/);
+  assert.match(app, /\/api\/progress/);
+  assert.match(app, /\/api\/ai\/mentor/);
+  assert.match(app, /OBJETIVOS VERIFICÁVEIS/);
+  assert.match(app, /REVISÃO DE ENGENHARIA/);
+  assert.match(data, /objectives:/);
+  assert.match(data, /engineering:/);
+  assert.match(multi, /productionContext/);
+  assert.match(multi, /failureMode/);
   assert.match(mentor, /buildMentorAnswer/);
-  assert.match(mentor, /languageName/);
-  assert.match(mentor, /calculateLearningScore/);
 });
 
-test("PWA, nova marca, launcher e metadados estão configurados", async () => {
-  const [manifest, worker, launcher, layout, brand, loop] = await Promise.all([
-    read("public/manifest.webmanifest"),
-    read("public/sw.js"),
-    read("ABRIR NEXACODE AI.bat"),
-    read("app/layout.tsx"),
-    read("app/nexa-brand.tsx"),
-    read("PROMPT-LOOP-NEXACODE.md"),
+test("autenticação própria protege senhas, sessões e tentativas", async () => {
+  const [auth, register, login, reset, audit] = await Promise.all([
+    read("lib/auth.ts"),
+    read("app/api/auth/register/route.ts"),
+    read("app/api/auth/login/route.ts"),
+    read("app/api/auth/reset-password/route.ts"),
+    read("lib/audit.ts"),
   ]);
-  const parsedManifest = JSON.parse(manifest);
-
-  assert.equal(parsedManifest.display, "standalone");
-  assert.equal(parsedManifest.lang, "pt-BR");
-  assert.equal(parsedManifest.icons.length, 2);
-  assert.match(parsedManifest.name, /JavaScript, Python e C\+\+/);
-  assert.match(worker, /CACHE_NAME/);
-  assert.match(worker, /nexacode-ai-v2/);
-  assert.match(worker, /caches\.match/);
-  assert.match(launcher, /localhost:3147/);
-  assert.match(launcher, /npm\.cmd run dev/);
-  assert.match(layout, /NexaCode AI/);
-  assert.match(layout, /og\.png/);
-  assert.match(layout, /JavaScript, Python e C\+\+/);
-  assert.match(brand, /nexa-mark-rail/);
-  assert.match(loop, /CRITÉRIO DE PARADA/);
+  assert.match(auth, /PBKDF2/);
+  assert.match(auth, /210_000/);
+  assert.match(auth, /HttpOnly/);
+  assert.match(auth, /SameSite=Lax/);
+  assert.match(auth, /tokenHash/);
+  assert.match(register, /acceptedTerms/);
+  assert.match(register, /hashPassword/);
+  assert.match(login, /verifyPassword/);
+  assert.match(reset, /delete\(userSessions\)/);
+  assert.match(audit, /enforceRateLimit/);
 });
 
-test("o laboratório usa execução isolada e limite de tempo", async () => {
-  const app = await read("app/nexacode-app.tsx");
-  assert.match(app, /new Blob/);
-  assert.match(app, /worker\.terminate/);
-  assert.match(app, /3000/);
-  assert.match(app, /Execução interrompida/);
-});
-
-test("cadastro tem três etapas, persistência segura e páginas legais", async () => {
-  const [page, client, api, schema, hosting, terms, privacy] = await Promise.all([
-    read("app/cadastro/page.tsx"),
-    read("app/cadastro/cadastro-client.tsx"),
-    read("app/api/profile/route.ts"),
+test("banco SaaS usa PostgreSQL do Supabase com migração, vínculos e RLS", async () => {
+  const [schema, migration, database, drizzleConfig, vercel] = await Promise.all([
     read("db/schema.ts"),
-    read(".openai/hosting.json"),
-    read("app/termos/page.tsx"),
-    read("app/privacidade/page.tsx"),
+    read("supabase/migrations/0000_clear_guardsmen.sql"),
+    read("db/index.ts"),
+    read("drizzle.config.ts"),
+    read("vercel.json"),
   ]);
-  const hostingConfig = JSON.parse(hosting);
+  const requiredTables = [
+    "users",
+    "user_sessions",
+    "account_tokens",
+    "learning_progress",
+    "saas_plans",
+    "subscriptions",
+    "billing_events",
+    "organizations",
+    "organization_members",
+    "organization_invitations",
+    "ai_usage",
+    "ai_history",
+    "learning_tracks",
+    "learning_lessons",
+    "learning_challenges",
+    "lesson_checkpoints",
+    "permissions",
+    "classrooms",
+    "classroom_members",
+    "track_assignments",
+    "coupons",
+    "system_events",
+    "audit_logs",
+  ];
+  for (const table of requiredTables) {
+    assert.match(schema, new RegExp(table));
+    assert.match(migration, new RegExp(`CREATE TABLE "${table}"`));
+  }
+  assert.match(schema, /drizzle-orm\/pg-core/);
+  assert.match(migration, /FOREIGN KEY/);
+  assert.match(migration, /INSERT INTO "saas_plans"/);
+  assert.match(migration, /INSERT INTO "learning_tracks"/);
+  assert.match(migration, /ENABLE ROW LEVEL SECURITY/);
+  assert.match(database, /drizzle-orm\/postgres-js/);
+  assert.match(database, /SUPABASE_DATABASE_URL/);
+  assert.match(database, /databaseConfigured/);
+  assert.match(drizzleConfig, /dialect: "postgresql"/);
+  assert.equal(JSON.parse(vercel).framework, "nextjs");
+});
 
-  assert.match(page, /getChatGPTUser/);
-  assert.match(page, /getStudentProfile/);
-  assert.match(client, /ETAPA 01 · IDENTIDADE/);
-  assert.match(client, /ETAPA 02 · OBJETIVO/);
-  assert.match(client, /ETAPA 03 · ROTINA/);
-  assert.match(client, /nexacode-device-profile-v1/);
-  assert.match(client, /\/api\/profile/);
-  assert.doesNotMatch(client, /type="password"/);
-  assert.match(api, /acceptedTerms/);
-  assert.match(api, /onConflictDoUpdate/);
-  assert.match(schema, /student_profiles/);
-  assert.equal(hostingConfig.d1, "DB");
-  assert.match(terms, /O NexaCode não recebe nem armazena sua senha/);
-  assert.match(privacy, /Não vendemos seus dados/);
+test("planos e pagamentos possuem autorização no servidor e webhook assinado", async () => {
+  const [plans, progress, billing, checkout, webhook, cakto, caktoWebhook] = await Promise.all([
+    read("lib/saas.ts"),
+    read("app/api/progress/route.ts"),
+    read("lib/billing.ts"),
+    read("app/api/billing/checkout/route.ts"),
+    read("app/api/billing/webhook/route.ts"),
+    read("lib/cakto.ts"),
+    read("app/api/billing/cakto/webhook/route.ts"),
+  ]);
+  assert.match(plans, /free/);
+  assert.match(plans, /pro/);
+  assert.match(plans, /teams/);
+  assert.match(progress, /accessibleLessonIds/);
+  assert.match(billing, /STRIPE_WEBHOOK_SECRET/);
+  assert.match(billing, /crypto\.subtle\.sign/);
+  assert.match(billing, /checkout\/sessions/);
+  assert.match(checkout, /requireSessionUser/);
+  assert.match(webhook, /verifyStripeSignature/);
+  assert.match(cakto, /CAKTO_WEBHOOK_SECRET/);
+  assert.match(cakto, /safeEqual/);
+  assert.match(cakto, /onConflictDoNothing/);
+  assert.match(cakto, /transaction/);
+  assert.match(cakto, /subscription_renewed/);
+  assert.match(cakto, /subscription_canceled/);
+  assert.match(cakto, /chargeback/);
+  assert.match(cakto, /searchParams\.set\("sck"/);
+  assert.match(caktoWebhook, /verifyCaktoSecret/);
+});
+
+test("deploy separa frontend Vercel e backend Railway", async () => {
+  const [nextConfig, railway, vercel, environment, deployment] = await Promise.all([
+    read("next.config.ts"),
+    read("railway.toml"),
+    read("vercel.json"),
+    read(".env.example"),
+    read("DEPLOY-VERCEL-RAILWAY.md"),
+  ]);
+  assert.match(nextConfig, /BACKEND_URL/);
+  assert.match(nextConfig, /source: "\/api\/:path\*"/);
+  assert.match(railway, /NIXPACKS/);
+  assert.match(railway, /healthcheckPath = "\/api\/health"/);
+  assert.equal(JSON.parse(vercel).framework, "nextjs");
+  assert.match(environment, /BILLING_PROVIDER=cakto/);
+  assert.match(environment, /CAKTO_PRO_MONTHLY_CHECKOUT_URL/);
+  assert.match(deployment, /Railway/);
+  assert.match(deployment, /Vercel/);
+});
+
+test("organizações e administração verificam plano, papel e sessão", async () => {
+  const [organizations, invites, classrooms, admin, adminUsers] = await Promise.all([
+    read("app/api/organizations/route.ts"),
+    read("app/api/organizations/invite/route.ts"),
+    read("app/api/organizations/classrooms/route.ts"),
+    read("app/api/admin/overview/route.ts"),
+    read("app/api/admin/users/route.ts"),
+  ]);
+  assert.match(organizations, /canUseFeature/);
+  assert.match(invites, /planId !== "teams"/);
+  assert.match(invites, /\["admin", "teacher"\]/);
+  assert.match(classrooms, /managementMembership/);
+  assert.match(classrooms, /canUseFeature/);
+  assert.match(admin, /role !== "admin"/);
+  assert.match(adminUsers, /role !== "admin"/);
+});
+
+test("preferências de IA, histórico e certificados funcionam no servidor", async () => {
+  const [profile, mentor, progress, certificate] = await Promise.all([
+    read("app/api/profile/route.ts"),
+    read("app/api/ai/mentor/route.ts"),
+    read("app/api/progress/route.ts"),
+    read("app/certificado/[code]/page.tsx"),
+  ]);
+  assert.match(profile, /aiEnabled/);
+  assert.match(profile, /themePreference/);
+  assert.match(profile, /avatarPreset/);
+  assert.match(mentor, /profile\?\.aiEnabled === false/);
+  assert.match(mentor, /insert\(aiHistory\)/);
+  assert.match(progress, /lessonsByLanguage/);
+  assert.match(progress, /insert\(certificates\)/);
+  assert.match(certificate, /CERTIFICADO AUTÊNTICO/);
+});
+
+test("landing, cadastro, preços, conta, equipe e admin são rotas reais", async () => {
+  const [landing, auth, pricing, pricingGrid, account, team, admin] = await Promise.all([
+    read("app/page.tsx"),
+    read("app/auth-form.tsx"),
+    read("app/precos/page.tsx"),
+    read("app/pricing-grid.tsx"),
+    read("app/conta/page.tsx"),
+    read("app/equipe/page.tsx"),
+    read("app/admin/page.tsx"),
+  ]);
+  assert.match(landing, /Programação deixa de ser teoria/);
+  assert.match(auth, /type=\{showPassword/);
+  assert.match(auth, /\/api\/auth\/register/);
+  assert.match(pricing, /PricingGrid/);
+  assert.match(pricingGrid, /Periodicidade da cobrança/);
+  assert.match(pricingGrid, /\/precos\?cycle=monthly/);
+  assert.match(pricingGrid, /2 meses de economia/);
+  assert.match(pricingGrid, /Checkout protegido pela Cakto/);
+  assert.match(account, /getSessionUser/);
+  assert.match(team, /planId !== "teams"/);
+  assert.match(admin, /role !== "admin"/);
+});
+
+test("PWA não armazena páginas privadas e Next.js envia headers de segurança", async () => {
+  const [nextConfig, serviceWorker, manifest] = await Promise.all([
+    read("next.config.ts"),
+    read("public/sw.js"),
+    read("public/manifest.webmanifest"),
+  ]);
+  assert.match(serviceWorker, /nexacode-ai-v4/);
+  assert.match(serviceWorker, /url\.pathname\.startsWith\("\/api\/"\)/);
+  assert.match(serviceWorker, /url\.pathname\.startsWith\("\/conta"\)/);
+  assert.match(nextConfig, /X-Content-Type-Options/);
+  assert.match(nextConfig, /Strict-Transport-Security/);
+  assert.match(nextConfig, /Content-Security-Policy/);
+  assert.match(nextConfig, /serverExternalPackages: \["postgres"\]/);
+  assert.equal(JSON.parse(manifest).start_url, "/app");
+});
+
+test("LGPD permite exportação e exclusão sem remover cobrança ativa silenciosamente", async () => {
+  const [account, privacy, setup] = await Promise.all([
+    read("app/api/account/route.ts"),
+    read("app/privacidade/page.tsx"),
+    read("SAAS-SETUP.md"),
+  ]);
+  assert.match(account, /exportedAt/);
+  assert.match(account, /Cancele a assinatura/);
+  assert.match(account, /delete\(learningProgress\)/);
+  assert.match(privacy, /NÃ£o vendemos seus dados|Não vendemos seus dados/);
+  assert.match(setup, /Nunca coloque valores reais/);
 });

@@ -2,7 +2,7 @@
   "name": "NexaCode AI — Aprenda JavaScript, Python e C++",
   "short_name": "NexaCode",
   "description": "Trilhas práticas de JavaScript, Python e C++ com missões, checkpoints e mentor inteligente local.",
-  "start_url": "/",
+  "start_url": "/app",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",
@@ -28,13 +28,13 @@
     {
       "name": "Abrir Code Lab",
       "short_name": "Code Lab",
-      "url": "/",
+      "url": "/app",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Conversar com NEX",
       "short_name": "Mentor",
-      "url": "/",
+      "url": "/app",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]

@@ -1,4 +1,4 @@
-const CACHE_NAME = "nexacode-ai-v2";
+const CACHE_NAME = "nexacode-ai-v4";
 const CORE_ASSETS = [
   "/",
   "/manifest.webmanifest",
@@ -25,11 +25,27 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+  const url = new URL(event.request.url);
+  const privatePath =
+    url.pathname.startsWith("/api/") ||
+    url.pathname.startsWith("/app") ||
+    url.pathname.startsWith("/conta") ||
+    url.pathname.startsWith("/equipe") ||
+    url.pathname.startsWith("/admin");
+
+  if (privatePath) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
 
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        if (response.ok && new URL(event.request.url).origin === self.location.origin) {
+        if (
+          response.ok &&
+          url.origin === self.location.origin &&
+          !response.headers.has("set-cookie")
+        ) {
           const copy = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         }

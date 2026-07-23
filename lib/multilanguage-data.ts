@@ -19,18 +19,51 @@ const lesson = (
   options: string[],
   answer: number,
   explanation: string,
-): Lesson => ({
-  id,
-  title,
-  summary,
-  duration,
-  difficulty,
-  theory,
-  analogy,
-  code,
-  mission,
-  quiz: { question, options, answer, explanation },
-});
+): Lesson => {
+  const isPython = id.startsWith("python-");
+  const language = isPython ? "Python" : "C++";
+  const prerequisites =
+    difficulty === "Iniciante"
+      ? ["Lógica de programação", `Ambiente básico de ${language}`]
+      : difficulty === "Intermediário"
+        ? [`Sintaxe fundamental de ${language}`, "Funções, coleções e tratamento de erros"]
+        : ["Modelagem modular", "Testes, depuração e análise de complexidade"];
+  return {
+    id,
+    title,
+    summary,
+    duration,
+    difficulty,
+    theory,
+    analogy,
+    code,
+    mission,
+    objectives: [
+      `Explicar ${title.toLocaleLowerCase("pt-BR")} com precisão técnica em ${language}.`,
+      "Implementar a solução com contratos claros, validação de entrada e tratamento explícito de falhas.",
+      "Defender a escolha da estrutura de dados e demonstrar o comportamento com testes reproduzíveis.",
+    ],
+    prerequisites,
+    engineering: {
+      productionContext: isPython
+        ? "Em serviços Python, separe domínio, entrada e infraestrutura; use type hints, funções pequenas e erros específicos para manter o comportamento observável."
+        : "Em C++ moderno, expresse propriedade e tempo de vida nos tipos; prefira RAII, biblioteca padrão e interfaces que tornem estados inválidos difíceis de representar.",
+      failureMode: isPython
+        ? "Observe mutabilidade compartilhada, exceções genéricas, entradas sem normalização e dependências implícitas. Esses pontos costumam transformar erros locais em falhas difíceis de reproduzir."
+        : "Verifique acesso fora dos limites, referências inválidas, overflow, comportamento indefinido e movimentações inesperadas. Compile com avisos máximos e sanitizers durante o desenvolvimento.",
+      verification: isPython
+        ? "Cubra caminho nominal, fronteiras e exceções com testes determinísticos. Quando houver I/O, injete a dependência para testar a regra sem rede nem disco."
+        : "Teste invariantes, limites e propriedade de recursos. Use -Wall -Wextra -Wpedantic e, quando disponível, AddressSanitizer e UndefinedBehaviorSanitizer.",
+      performance:
+        difficulty === "Avançado"
+          ? isPython
+            ? "Estime complexidade, reduza alocações e travessias redundantes e use profiling antes de escolher cache, vetorização ou concorrência."
+            : "Analise complexidade, localidade de cache, cópias, alocações e custo de abstrações. Confirme hipóteses com benchmark em build otimizado."
+          : "Escolha primeiro a estrutura correta, identifique a ordem de crescimento e só otimize depois de medir um gargalo real.",
+    },
+    quiz: { question, options, answer, explanation },
+  };
+};
 
 export const programmingLanguages: ProgrammingLanguage[] = [
   {

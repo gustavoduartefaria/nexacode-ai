@@ -25,6 +25,30 @@ if not exist "node_modules" (
   )
 )
 
+if not exist ".env.local" (
+  copy /y ".env.example" ".env.local" >nul
+  echo.
+  echo O arquivo .env.local foi criado.
+  echo Configure as duas URLs do Supabase para ativar cadastro e sincronizacao.
+)
+
+findstr /B /C:"SUPABASE_DIRECT_URL=postgres" ".env.local" >nul 2>nul
+if not errorlevel 1 (
+  echo.
+  echo Aplicando migracoes no Supabase...
+  call npm.cmd run db:migrate
+  if errorlevel 1 (
+    echo.
+    echo A migracao falhou. Confira a URL direta do Supabase no .env.local.
+    pause
+    exit /b 1
+  )
+) else (
+  echo.
+  echo Supabase ainda nao configurado. O site publico abrira normalmente,
+  echo mas cadastro, login e sincronizacao aguardam as URLs no .env.local.
+)
+
 echo.
 echo Iniciando o NexaCode AI...
 echo O aplicativo abrira no navegador em alguns segundos.

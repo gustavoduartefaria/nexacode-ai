@@ -1,13 +1,40 @@
-import { env } from "cloudflare:workers";
-import { drizzle } from "drizzle-orm/d1";
+import "server-only";
+import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import postgres, { type Sql } from "postgres";
 import * as schema from "./schema";
 
-export function getDb() {
-  if (!env.DB) {
+type NexaDatabase = PostgresJsDatabase<typeof schema>;
+
+const globalDatabase = globalThis as typeof globalThis & {
+  nexaPostgresClient?: Sql;
+  nexaDatabase?: NexaDatabase;
+};
+
+function databaseUrl() {
+  return process.env.SUPABASE_DATABASE_URL ?? process.env.DATABASE_URL ?? "";
+}
+
+export function databaseConfigured() {
+  return Boolean(databaseUrl());
+}
+
+export function getDb(): NexaDatabase {
+  const url = databaseUrl();
+  if (!url) {
     throw new Error(
-      "Cloudflare D1 binding `DB` is unavailable. Set the `d1` field in .openai/hosting.json to `DB` or let your control plane inject the real binding values before using the database."
+      "SUPABASE_DATABASE_URL is not configured. Add the Supabase pooler connection string before using server data.",
     );
   }
 
-  return drizzle(env.DB, { schema });
+  if (!globalDatabase.nexaPostgresClient) {
+    globalDatabase.nexaPostgresClient = postgres(url, {
+      max: process.env.NODE_ENV === "production" ? 3 : 1,
+      idle_timeout: 20,
+      connect_timeout: 10,
+      prepare: false,
+      ssl: "require",
+    });
+  }
+  globalDatabase.nexaDatabase ??= drizzle(globalDatabase.nexaPostgresClient, { schema });
+  return globalDatabase.nexaDatabase;
 }

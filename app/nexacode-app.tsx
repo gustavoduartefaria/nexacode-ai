@@ -36,6 +36,7 @@ import {
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NexaMark } from "@/app/nexa-brand";
+import ThemeToggle from "@/app/theme-toggle";
 import {
   allLessons,
   challenges,
@@ -52,6 +53,7 @@ import {
   inspectCode,
   type MentorAnswer,
 } from "@/lib/mentor";
+import { accessibleLessonIds, type PlanId } from "@/lib/saas";
 
 type View = "home" | "learn" | "lab" | "mentor" | "progress";
 
@@ -63,6 +65,19 @@ type ProgressState = {
   streak: number;
   lastVisit: string;
   activeLanguage: LanguageId;
+  studyMinutes: number;
+};
+
+type WorkspaceUser = {
+  id: string;
+  email: string;
+  displayName: string;
+  role: "student" | "admin";
+  status: string;
+  planId: PlanId;
+  emailVerified: boolean;
+  avatarPreset: "orbit" | "terminal" | "pixel" | "nebula";
+  themePreference: "system" | "dark" | "light";
 };
 
 type ChatMessage = {
@@ -78,6 +93,7 @@ type InstallPromptEvent = Event & {
 };
 
 const STORAGE_KEY = "nexacode-ai-progress-v1";
+const LEGACY_MIGRATION_OWNER_KEY = "nexacode-ai-legacy-owner-v3";
 const todayKey = () => new Date().toISOString().slice(0, 10);
 
 const initialProgress: ProgressState = {
@@ -88,6 +104,7 @@ const initialProgress: ProgressState = {
   streak: 1,
   lastVisit: todayKey(),
   activeLanguage: "javascript",
+  studyMinutes: 0,
 };
 
 const navItems: Array<{
@@ -205,7 +222,14 @@ function LanguageSwitcher({
   );
 }
 
-export default function NexaCodeApp() {
+export default function NexaCodeApp({
+  user,
+  cloudProgress,
+}: {
+  user: WorkspaceUser;
+  cloudProgress: ProgressState | null;
+}) {
+  const accountStorageKey = `${STORAGE_KEY}:${user.id}`;
   const [view, setView] = useState<View>("home");
   const [mobileMenu, setMobileMenu] = useState(false);
   const [progress, setProgress] = useState<ProgressState>(initialProgress);
@@ -273,9 +297,26 @@ export default function NexaCodeApp() {
     progress.completedChallenges.length,
     progress.streak,
   );
+  const allowedLessonIds = useMemo(
+    () =>
+      new Set(
+        accessibleLessonIds(
+          user.planId,
+          allLessons.map((lesson) => lesson.id),
+        ),
+      ),
+    [user.planId],
+  );
 
   useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
+    const accountSaved = window.localStorage.getItem(accountStorageKey);
+    const migrationOwner = window.localStorage.getItem(LEGACY_MIGRATION_OWNER_KEY);
+    const saved =
+      accountSaved ??
+      (!migrationOwner ? window.localStorage.getItem(STORAGE_KEY) : null);
+    if (!accountSaved && saved && !migrationOwner) {
+      window.localStorage.setItem(LEGACY_MIGRATION_OWNER_KEY, user.id);
+    }
     let restoredProgress: ProgressState | null = null;
     if (saved) {
       try {
@@ -297,14 +338,33 @@ export default function NexaCodeApp() {
           lastVisit: todayKey(),
         };
       } catch {
-        window.localStorage.removeItem(STORAGE_KEY);
+        window.localStorage.removeItem(accountStorageKey);
       }
     }
     const hydrationTimer = window.setTimeout(() => {
-      if (restoredProgress) {
-        setProgress(restoredProgress);
-        setDraftName(restoredProgress.name);
-      }
+      const mergedProgress: ProgressState = {
+        ...initialProgress,
+        ...(restoredProgress ?? {}),
+        ...(cloudProgress ?? {}),
+        name: cloudProgress?.name || user.displayName,
+        completedLessons: [
+          ...new Set([
+            ...(restoredProgress?.completedLessons ?? []),
+            ...(cloudProgress?.completedLessons ?? []),
+          ]),
+        ].filter((id) => allowedLessonIds.has(id)),
+        completedChallenges: [
+          ...new Set([
+            ...(restoredProgress?.completedChallenges ?? []),
+            ...(cloudProgress?.completedChallenges ?? []),
+          ]),
+        ],
+        xp: Math.max(restoredProgress?.xp ?? 0, cloudProgress?.xp ?? 0),
+        streak: Math.max(restoredProgress?.streak ?? 1, cloudProgress?.streak ?? 1),
+        lastVisit: todayKey(),
+      };
+      setProgress(mergedProgress);
+      setDraftName(mergedProgress.name);
       setHydrated(true);
     }, 0);
 
@@ -321,13 +381,21 @@ export default function NexaCodeApp() {
       window.clearTimeout(hydrationTimer);
       window.removeEventListener("beforeinstallprompt", handleInstall);
     };
-  }, []);
+  }, [accountStorageKey, allowedLessonIds, cloudProgress, user.displayName, user.id]);
 
   useEffect(() => {
     if (hydrated) {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+      window.localStorage.setItem(accountStorageKey, JSON.stringify(progress));
+      const syncTimer = window.setTimeout(() => {
+        fetch("/api/progress", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(progress),
+        }).catch(() => undefined);
+      }, 500);
+      return () => window.clearTimeout(syncTimer);
     }
-  }, [hydrated, progress]);
+  }, [accountStorageKey, hydrated, progress]);
 
   useEffect(() => {
     if (!toast) return;
@@ -358,6 +426,10 @@ export default function NexaCodeApp() {
   };
 
   const openLesson = (id: string) => {
+    if (!allowedLessonIds.has(id)) {
+      setToast("Esta aula faz parte dos planos Pro e Equipes.");
+      return;
+    }
     const selectedLesson = allLessons.find((item) => item.id === id);
     if (selectedLesson) {
       setProgress((current) => ({
@@ -426,7 +498,8 @@ export default function NexaCodeApp() {
       };
     `;
     const blob = new Blob([workerSource], { type: "text/javascript" });
-    const worker = new Worker(URL.createObjectURL(blob));
+    const objectUrl = URL.createObjectURL(blob);
+    const worker = new Worker(objectUrl);
     const lines: string[] = [];
     let completed = false;
 
@@ -434,7 +507,7 @@ export default function NexaCodeApp() {
       if (completed) return;
       completed = true;
       worker.terminate();
-      URL.revokeObjectURL(blob);
+      URL.revokeObjectURL(objectUrl);
       if (runToken.current !== token) return;
       const finalLines = lines.length ? lines : ["✓ Código executado sem saída no console."];
       setConsoleLines(finalLines);
@@ -476,17 +549,62 @@ export default function NexaCodeApp() {
     worker.postMessage(code);
   };
 
-  const askMentor = (question = mentorInput) => {
+  const askMentor = async (question = mentorInput) => {
     const cleanQuestion = question.trim();
     if (!cleanQuestion) return;
-    const answer = buildMentorAnswer(cleanQuestion, currentLesson, code);
     const stamp = messageToken.current++;
     setMessages((current) => [
       ...current,
       { id: `student-${stamp}`, role: "student", text: cleanQuestion },
-      { id: `mentor-${stamp}`, role: "mentor", text: answer.message, answer },
     ]);
     setMentorInput("");
+    try {
+      const response = await fetch("/api/ai/mentor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: cleanQuestion,
+          lessonId: currentLesson.id,
+          code,
+        }),
+      });
+      const result = (await response.json()) as {
+        answer?: MentorAnswer;
+        error?: string;
+      };
+      if (!response.ok && response.status < 500) {
+        const message = result.error ?? "O mentor não está disponível para esta conta.";
+        setMessages((current) => [
+          ...current,
+          { id: `mentor-${stamp}`, role: "mentor", text: message },
+        ]);
+        setToast(message);
+        return;
+      }
+      if (!response.ok || !result.answer) {
+        throw new Error(result.error ?? "Mentor indisponível.");
+      }
+      setMessages((current) => [
+        ...current,
+        {
+          id: `mentor-${stamp}`,
+          role: "mentor",
+          text: result.answer!.message,
+          answer: result.answer,
+        },
+      ]);
+    } catch (error) {
+      const answer = buildMentorAnswer(cleanQuestion, currentLesson, code);
+      setMessages((current) => [
+        ...current,
+        { id: `mentor-${stamp}`, role: "mentor", text: answer.message, answer },
+      ]);
+      setToast(
+        error instanceof Error
+          ? `${error.message} Usei o mentor local como alternativa.`
+          : "Usei o mentor local como alternativa.",
+      );
+    }
   };
 
   const analyzeInMentor = () => {
@@ -570,7 +688,7 @@ export default function NexaCodeApp() {
           </div>
           <div className="hero-proof">
             <span>
-              <ShieldCheck size={16} /> Progresso salvo no dispositivo
+              <ShieldCheck size={16} /> Progresso sincronizado na nuvem
             </span>
             <span>
               <BrainCircuit size={16} /> Mentor didático local
@@ -772,14 +890,28 @@ export default function NexaCodeApp() {
                 <div className="lesson-grid">
                   {module.lessons.map((item, index) => {
                     const completed = progress.completedLessons.includes(item.id);
+                    const accessible = allowedLessonIds.has(item.id);
                     return (
                       <button
-                        className={classNames("lesson-card", completed && "lesson-completed")}
+                        className={classNames(
+                          "lesson-card",
+                          completed && "lesson-completed",
+                          !accessible && "lesson-locked",
+                        )}
                         key={item.id}
                         onClick={() => openLesson(item.id)}
+                        aria-label={
+                          accessible ? item.title : `${item.title}, disponível no plano Pro`
+                        }
                       >
                         <span className="lesson-index">
-                          {completed ? <Check size={16} /> : String(index + 1).padStart(2, "0")}
+                          {!accessible ? (
+                            <LockKeyhole size={15} />
+                          ) : completed ? (
+                            <Check size={16} />
+                          ) : (
+                            String(index + 1).padStart(2, "0")
+                          )}
                         </span>
                         <div>
                           <h3>{item.title}</h3>
@@ -1036,8 +1168,8 @@ export default function NexaCodeApp() {
         <div className="privacy-note">
           <LockKeyhole size={18} />
           <div>
-            <strong>Processamento local</strong>
-            <span>Suas perguntas e seu código ficam neste dispositivo.</span>
+            <strong>Motor didático transparente</strong>
+            <span>Sem API remota: o processamento usa regras locais do NexaCode.</span>
           </div>
         </div>
       </section>
@@ -1049,7 +1181,7 @@ export default function NexaCodeApp() {
             <h1>Como posso destravar seu aprendizado?</h1>
           </div>
           <span className="local-chip">
-            <ShieldCheck size={14} /> IA didática local
+            <ShieldCheck size={14} /> Motor local · uso controlado
           </span>
         </div>
         <div className="chat-messages" aria-live="polite">
@@ -1121,7 +1253,7 @@ export default function NexaCodeApp() {
     <div className="view-stack view-enter">
       <section className="page-intro profile-intro">
         <div className="profile-hero-avatar">
-          <span>{progress.name.slice(0, 1).toUpperCase()}</span>
+          <span className={`avatar-preset-${user.avatarPreset}`}>{progress.name.slice(0, 1).toUpperCase()}</span>
           <i />
         </div>
         <div className="profile-main-copy">
@@ -1150,7 +1282,7 @@ export default function NexaCodeApp() {
         </div>
         {!profileEditing && (
           <div className="profile-actions">
-            <Link className="button button-primary" href="/cadastro">
+            <Link className="button button-primary" href="/conta">
               <UserPlus size={16} />
               Completar conta
             </Link>
@@ -1283,14 +1415,14 @@ export default function NexaCodeApp() {
           <button className="button button-primary wide" onClick={installApp}>
             <Download size={17} /> Instalar NexaCode
           </button>
-          <small>Sem loja de aplicativos. Sem cadastro obrigatório.</small>
+          <small>Sem loja de aplicativos. Sua conta mantém tudo sincronizado.</small>
         </aside>
       </section>
 
       <section className="danger-zone">
         <div>
           <strong>Recomeçar jornada</strong>
-          <span>Apaga aulas, desafios e XP somente deste dispositivo.</span>
+          <span>Apaga aulas, desafios e XP da sua conta sincronizada.</span>
         </div>
         <button onClick={() => setResetOpen(true)}>Reiniciar progresso</button>
       </section>
@@ -1343,7 +1475,7 @@ export default function NexaCodeApp() {
             compact
           />
         </div>
-        <Link className="account-sidebar-link" href="/cadastro">
+        <Link className="account-sidebar-link" href="/conta">
           <UserPlus size={17} />
           <span>
             <strong>Minha conta</strong>
@@ -1372,7 +1504,7 @@ export default function NexaCodeApp() {
         </button>
         <div className="sidebar-profile">
           <button onClick={() => navigate("progress")}>
-            <span>{progress.name.slice(0, 1).toUpperCase()}</span>
+            <span className={`avatar-preset-${user.avatarPreset}`}>{progress.name.slice(0, 1).toUpperCase()}</span>
             <div>
               <strong>{progress.name}</strong>
               <small>
@@ -1418,6 +1550,7 @@ export default function NexaCodeApp() {
             </small>
           </div>
           <div className="topbar-actions">
+            <ThemeToggle preferredTheme={user.themePreference} />
             <button className="search-trigger" onClick={() => setSearchOpen(true)}>
               <Search size={17} />
               <span>Buscar uma aula...</span>
@@ -1425,7 +1558,7 @@ export default function NexaCodeApp() {
                 <Command size={12} /> K
               </kbd>
             </button>
-            <Link className="topbar-account-link" href="/cadastro">
+            <Link className="topbar-account-link" href="/conta">
               <UserPlus size={17} />
               <span>Minha conta</span>
             </Link>
@@ -1454,7 +1587,7 @@ export default function NexaCodeApp() {
                 </div>
               )}
             </div>
-            <button className="avatar-button" onClick={() => navigate("progress")}>
+            <button className={`avatar-button avatar-preset-${user.avatarPreset}`} onClick={() => navigate("progress")}>
               {progress.name.slice(0, 1).toUpperCase()}
             </button>
           </div>
@@ -1522,6 +1655,20 @@ export default function NexaCodeApp() {
                   <p>{currentLesson.analogy}</p>
                 </div>
               </div>
+              <section className="lesson-objectives">
+                <div>
+                  <span>OBJETIVOS VERIFICÁVEIS</span>
+                  <ul>
+                    {currentLesson.objectives.map((objective) => <li key={objective}>{objective}</li>)}
+                  </ul>
+                </div>
+                <div>
+                  <span>PRÉ-REQUISITOS</span>
+                  <ul>
+                    {currentLesson.prerequisites.map((prerequisite) => <li key={prerequisite}>{prerequisite}</li>)}
+                  </ul>
+                </div>
+              </section>
               <div className="lesson-code">
                 <div className="window-bar">
                   <span />
@@ -1541,6 +1688,15 @@ export default function NexaCodeApp() {
                   <code>{currentLesson.code}</code>
                 </pre>
               </div>
+              <section className="lesson-engineering">
+                <span>REVISÃO DE ENGENHARIA</span>
+                <div>
+                  <article><strong>Uso em produção</strong><p>{currentLesson.engineering.productionContext}</p></article>
+                  <article><strong>Falhas que importam</strong><p>{currentLesson.engineering.failureMode}</p></article>
+                  <article><strong>Estratégia de testes</strong><p>{currentLesson.engineering.verification}</p></article>
+                  <article><strong>Custo e desempenho</strong><p>{currentLesson.engineering.performance}</p></article>
+                </div>
+              </section>
               <div className="mission-block">
                 <Target size={21} />
                 <div>

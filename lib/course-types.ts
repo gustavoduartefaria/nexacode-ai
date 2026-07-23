@@ -24,6 +24,14 @@ export type Lesson = {
   analogy: string;
   code: string;
   mission: string;
+  objectives: string[];
+  prerequisites: string[];
+  engineering: {
+    productionContext: string;
+    failureMode: string;
+    verification: string;
+    performance: string;
+  };
   quiz: {
     question: string;
     options: string[];

@@ -29,18 +29,44 @@ const lesson = (
   options: string[],
   answer: number,
   explanation: string,
-): Lesson => ({
-  id,
-  title,
-  summary,
-  duration,
-  difficulty,
-  theory,
-  analogy,
-  code,
-  mission,
-  quiz: { question, options, answer, explanation },
-});
+): Lesson => {
+  const prerequisites =
+    difficulty === "Iniciante"
+      ? ["Leitura básica de código", "Uso do console do navegador"]
+      : difficulty === "Intermediário"
+        ? ["Domínio dos fundamentos de JavaScript", "Funções, escopo e estruturas de dados"]
+        : ["JavaScript assíncrono", "Testes automatizados e organização modular"];
+  return {
+    id,
+    title,
+    summary,
+    duration,
+    difficulty,
+    theory,
+    analogy,
+    code,
+    mission,
+    objectives: [
+      `Explicar ${title.toLocaleLowerCase("pt-BR")} usando o modelo de execução do JavaScript.`,
+      "Implementar uma solução pequena com nomes, contratos e fluxo de controle explícitos.",
+      "Validar comportamento normal, caso de limite e entrada inválida antes de considerar a solução pronta.",
+    ],
+    prerequisites,
+    engineering: {
+      productionContext:
+        "Em produção, este conceito deve ficar isolado em uma unidade pequena, observável e com responsabilidade única. Prefira APIs explícitas a efeitos colaterais ocultos.",
+      failureMode:
+        "Os defeitos mais comuns surgem de coerção implícita, estado compartilhado, valores ausentes e caminhos de erro não tratados. Modele esses casos antes do caminho feliz.",
+      verification:
+        "Crie pelo menos três verificações: exemplo nominal, valor de fronteira e falha esperada. Registre a saída real e compare-a com um resultado definido antes da execução.",
+      performance:
+        difficulty === "Avançado"
+          ? "Analise custo de tempo e memória, identifique alocações e evite trabalho repetido em loops ou renderizações. Meça antes de otimizar."
+          : "Priorize correção e legibilidade; depois observe quantas vezes cada operação é executada e quais dados permanecem em memória.",
+    },
+    quiz: { question, options, answer, explanation },
+  };
+};
 
 export const javascriptModules: CourseModule[] = [
   {

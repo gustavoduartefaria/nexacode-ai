@@ -3,19 +3,17 @@ import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+export const runtime = "nodejs";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const viewport: Viewport = {
-  themeColor: "#06080d",
-  colorScheme: "dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#06080d" },
+    { media: "(prefers-color-scheme: light)", color: "#f2f6f7" },
+  ],
+  colorScheme: "dark light",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -28,25 +26,18 @@ export async function generateMetadata(): Promise<Metadata> {
     headerStore.get("x-forwarded-proto") ?? (host?.includes("localhost") ? "http" : "https");
   const base = new URL(host ? `${protocol}://${host}` : "http://localhost:3147");
   const socialImage = new URL("/og.png", base).toString();
-
   return {
     metadataBase: base,
     title: {
-      default: "NexaCode AI — JavaScript, Python e C++",
+      default: "NexaCode AI — Aprenda programação construindo",
       template: "%s · NexaCode AI",
     },
     description:
-      "Plataforma tecnológica para aprender JavaScript, Python e C++ com aulas práticas, desafios e mentor inteligente local.",
+      "SaaS educacional para aprender JavaScript, Python e C++ com 44 aulas, laboratório, mentor contextual e progresso sincronizado.",
     applicationName: "NexaCode AI",
     manifest: "/manifest.webmanifest",
-    appleWebApp: {
-      capable: true,
-      statusBarStyle: "black-translucent",
-      title: "NexaCode",
-    },
-    formatDetection: {
-      telephone: false,
-    },
+    appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "NexaCode" },
+    formatDetection: { telephone: false },
     icons: {
       icon: [
         { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
@@ -57,39 +48,25 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: "website",
       locale: "pt_BR",
-      title: "NexaCode AI — Três linguagens, uma jornada de engenharia",
+      title: "NexaCode AI — Programação deixa de ser teoria",
       description:
-        "JavaScript, Python e C++ em trilhas práticas com desafios e um mentor que ensina você a pensar.",
+        "JavaScript, Python e C++ com prática real, mentor contextual e progresso na nuvem.",
       siteName: "NexaCode AI",
-      images: [
-        {
-          url: socialImage,
-          width: 1536,
-          height: 1024,
-          alt: "NexaCode AI, laboratório tecnológico de JavaScript, Python e C++",
-        },
-      ],
+      images: [{ url: socialImage, width: 1536, height: 1024, alt: "NexaCode AI, plataforma tecnológica para aprender programação" }],
     },
     twitter: {
       card: "summary_large_image",
-      title: "NexaCode AI — JavaScript, Python e C++",
-      description:
-        "Aprenda JavaScript, Python e C++ com trilhas práticas e orientação inteligente.",
+      title: "NexaCode AI — Aprenda programação construindo",
+      description: "44 aulas, três linguagens e uma jornada prática de engenharia.",
       images: [socialImage],
     },
   };
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
-      </body>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body>
     </html>
   );
 }

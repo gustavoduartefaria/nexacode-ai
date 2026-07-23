@@ -8,6 +8,20 @@
       "when": 1784404769885,
       "tag": "0000_condemned_korg",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1784432440599,
+      "tag": "0001_bumpy_the_santerians",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1784434020812,
+      "tag": "0002_slim_ken_ellis",
+      "breakpoints": true
     }
   ]
 }
