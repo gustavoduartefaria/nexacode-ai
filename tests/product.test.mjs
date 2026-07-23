@@ -190,7 +190,7 @@ test("preferências de IA, histórico e certificados funcionam no servidor", asy
 });
 
 test("landing, cadastro, preços, conta, equipe e admin são rotas reais", async () => {
-  const [landing, auth, pricing, pricingGrid, account, team, teamsSales, admin] = await Promise.all([
+  const [landing, auth, pricing, pricingGrid, account, team, teamsSales, admin, mascot, layout] = await Promise.all([
     read("app/page.tsx"),
     read("app/auth-form.tsx"),
     read("app/precos/page.tsx"),
@@ -199,6 +199,8 @@ test("landing, cadastro, preços, conta, equipe e admin são rotas reais", async
     read("app/equipe/page.tsx"),
     read("app/para-equipes/page.tsx"),
     read("app/admin/page.tsx"),
+    read("app/nexa-mascot.tsx"),
+    read("app/layout.tsx"),
   ]);
   assert.match(landing, /Programação deixa de ser teoria/);
   assert.match(auth, /type=\{showPassword/);
@@ -213,6 +215,10 @@ test("landing, cadastro, preços, conta, equipe e admin são rotas reais", async
   assert.match(teamsSales, /10 pessoas incluídas/);
   assert.match(teamsSales, /data-marketing-event="cta_teams"/);
   assert.match(admin, /role !== "admin"/);
+  assert.match(landing, /CONHEÇA O NEX/);
+  assert.match(mascot, /\/mascot\/nexa-mascot\.webp/);
+  assert.match(mascot, /usePathname/);
+  assert.match(layout, /<NexaMascot \/>/);
 });
 
 test("funil comercial rastreia campanhas sem dados pessoais e preserva intenção de compra", async () => {
@@ -243,7 +249,7 @@ test("PWA não armazena páginas privadas e Next.js envia headers de segurança"
     read("public/manifest.webmanifest"),
     read("proxy.ts"),
   ]);
-  assert.match(serviceWorker, /nexacode-ai-v7/);
+  assert.match(serviceWorker, /nexacode-ai-v8/);
   assert.match(serviceWorker, /url\.pathname\.startsWith\("\/api\/"\)/);
   assert.match(serviceWorker, /url\.pathname\.startsWith\("\/conta"\)/);
   assert.match(nextConfig, /X-Content-Type-Options/);

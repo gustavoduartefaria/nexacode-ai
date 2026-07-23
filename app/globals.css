@@ -8414,6 +8414,407 @@ main {
   }
 }
 
+/* Nex, the product mascot */
+.mascot-intro {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(360px, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(42px, 7vw, 92px);
+  width: min(1160px, calc(100% - 40px));
+  margin: 86px auto 50px;
+  padding: clamp(34px, 5vw, 64px);
+  overflow: hidden;
+  border: 1px solid rgba(87, 242, 204, 0.13);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 18% 40%, rgba(87, 242, 204, 0.1), transparent 28rem),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.035), rgba(9, 13, 20, 0.78));
+  box-shadow: 0 40px 110px rgba(0, 0, 0, 0.28);
+}
+
+.mascot-intro::after {
+  position: absolute;
+  z-index: -1;
+  right: -110px;
+  bottom: -180px;
+  width: 440px;
+  height: 440px;
+  border-radius: 50%;
+  background: rgba(139, 124, 255, 0.06);
+  filter: blur(70px);
+  content: "";
+}
+
+.mascot-intro-visual {
+  position: relative;
+  display: grid;
+  min-height: 410px;
+  place-items: center;
+}
+
+.mascot-intro-image {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 470px);
+  height: auto;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 28px 35px rgba(0, 0, 0, 0.28));
+  animation: mascot-friendly-float 4.8s ease-in-out infinite;
+}
+
+.mascot-orbit {
+  position: absolute;
+  border: 1px dashed rgba(87, 242, 204, 0.19);
+  border-radius: 50%;
+  animation: mascot-orbit-spin 22s linear infinite;
+}
+
+.mascot-orbit::after {
+  position: absolute;
+  top: 12%;
+  right: 12%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 16px rgba(87, 242, 204, 0.72);
+  content: "";
+}
+
+.mascot-orbit-one {
+  width: 370px;
+  height: 370px;
+}
+
+.mascot-orbit-two {
+  width: 290px;
+  height: 290px;
+  border-color: rgba(139, 124, 255, 0.16);
+  animation-direction: reverse;
+  animation-duration: 16s;
+}
+
+.mascot-status {
+  position: absolute;
+  z-index: 3;
+  right: 5%;
+  bottom: 4%;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 11px;
+  border: 1px solid rgba(87, 242, 204, 0.18);
+  border-radius: 999px;
+  color: #9fefdc;
+  background: rgba(5, 12, 15, 0.78);
+  backdrop-filter: blur(12px);
+  font-family: var(--font-geist-mono), Consolas, monospace;
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.mascot-status i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan);
+  animation: mascot-status-pulse 2s ease-in-out infinite;
+}
+
+.mascot-intro-copy h2 {
+  max-width: 680px;
+  margin: 17px 0 0;
+  font-size: clamp(2.4rem, 4.6vw, 4.7rem);
+  line-height: 1;
+  letter-spacing: -0.066em;
+}
+
+.mascot-intro-copy > p {
+  max-width: 600px;
+  margin-top: 22px;
+  color: #8f9bad;
+  font-size: 0.86rem;
+  line-height: 1.75;
+}
+
+.mascot-points {
+  display: grid;
+  gap: 11px;
+  margin: 27px 0;
+}
+
+.mascot-points span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #c3ccd8;
+  font-size: 0.71rem;
+}
+
+.mascot-points svg {
+  color: var(--cyan);
+}
+
+.nexa-guide {
+  position: fixed;
+  z-index: 90;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  display: grid;
+  justify-items: end;
+  pointer-events: none;
+}
+
+.nexa-guide-card {
+  position: relative;
+  width: min(326px, calc(100vw - 32px));
+  margin-bottom: 10px;
+  padding: 19px 44px 18px 19px;
+  border: 1px solid rgba(87, 242, 204, 0.2);
+  border-radius: 17px;
+  color: #eef7f5;
+  background:
+    radial-gradient(circle at 95% 5%, rgba(87, 242, 204, 0.1), transparent 10rem),
+    rgba(8, 13, 19, 0.94);
+  box-shadow: 0 22px 65px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(18px);
+  pointer-events: auto;
+  animation: mascot-card-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.nexa-guide-card::after {
+  position: absolute;
+  right: 31px;
+  bottom: -7px;
+  width: 13px;
+  height: 13px;
+  border-right: 1px solid rgba(87, 242, 204, 0.2);
+  border-bottom: 1px solid rgba(87, 242, 204, 0.2);
+  background: #091017;
+  rotate: 45deg;
+  content: "";
+}
+
+.nexa-guide-kicker {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--cyan);
+  font-family: var(--font-geist-mono), Consolas, monospace;
+  font-size: 0.5rem;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+}
+
+.nexa-guide-card > strong {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.nexa-guide-card p {
+  margin-top: 7px;
+  color: #94a1b2;
+  font-size: 0.67rem;
+  line-height: 1.58;
+}
+
+.nexa-guide-card > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  color: var(--cyan);
+  font-size: 0.64rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.nexa-guide-card > a:hover svg {
+  translate: 3px 0;
+}
+
+.nexa-guide-card > a svg {
+  transition: translate 180ms ease;
+}
+
+.nexa-guide-close {
+  position: absolute;
+  top: 11px;
+  right: 11px;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  place-items: center;
+  color: #738094;
+  background: rgba(255, 255, 255, 0.035);
+  cursor: pointer;
+}
+
+.nexa-guide-close:hover {
+  color: #eef7f5;
+  background: rgba(255, 255, 255, 0.065);
+}
+
+.nexa-guide-avatar {
+  position: relative;
+  display: grid;
+  width: 86px;
+  height: 86px;
+  padding: 0;
+  border: 1px solid rgba(87, 242, 204, 0.24);
+  border-radius: 25px;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(87, 242, 204, 0.16), transparent 70%),
+    rgba(8, 14, 20, 0.92);
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.42),
+    0 0 0 6px rgba(87, 242, 204, 0.025);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+  animation: mascot-button-float 4s ease-in-out infinite;
+}
+
+.nexa-guide-avatar:hover {
+  border-color: rgba(87, 242, 204, 0.5);
+  box-shadow:
+    0 22px 58px rgba(0, 0, 0, 0.46),
+    0 0 0 7px rgba(87, 242, 204, 0.05);
+  transform: translateY(-3px) rotate(-1deg);
+}
+
+.nexa-guide-avatar img {
+  width: 102px;
+  max-width: none;
+  height: 102px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 7px 9px rgba(0, 0, 0, 0.28));
+}
+
+.nexa-guide-avatar i {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 14px;
+  height: 14px;
+  border: 3px solid #071018;
+  border-radius: 50%;
+  background: #57f2cc;
+  box-shadow: 0 0 14px rgba(87, 242, 204, 0.8);
+  animation: mascot-notification-pulse 2s ease-in-out infinite;
+}
+
+@keyframes mascot-friendly-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -10px;
+  }
+}
+
+@keyframes mascot-orbit-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes mascot-status-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes mascot-card-in {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+    scale: 0.96;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+@keyframes mascot-button-float {
+  50% {
+    translate: 0 -5px;
+  }
+}
+
+@keyframes mascot-notification-pulse {
+  50% {
+    scale: 1.22;
+    opacity: 0.65;
+  }
+}
+
+@media (max-width: 760px) {
+  .mascot-intro {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 54px;
+    padding: 32px 22px 38px;
+    border-radius: 22px;
+  }
+
+  .mascot-intro-visual {
+    min-height: 330px;
+  }
+
+  .mascot-intro-image {
+    width: min(100%, 365px);
+  }
+
+  .mascot-orbit-one {
+    width: 285px;
+    height: 285px;
+  }
+
+  .mascot-orbit-two {
+    width: 220px;
+    height: 220px;
+  }
+
+  .mascot-status {
+    right: 1%;
+    bottom: 2%;
+  }
+
+  .mascot-intro-copy h2 {
+    font-size: clamp(2.3rem, 12vw, 3.45rem);
+  }
+
+  .nexa-guide {
+    right: max(12px, env(safe-area-inset-right));
+    bottom: calc(74px + env(safe-area-inset-bottom));
+  }
+
+  .nexa-guide-card {
+    width: min(310px, calc(100vw - 24px));
+  }
+
+  .nexa-guide-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 21px;
+  }
+
+  .nexa-guide-avatar img {
+    width: 88px;
+    height: 88px;
+  }
+}
+
 /* Friendly motion system for public pages */
 [data-reveal].reveal-pending {
   opacity: 0;
@@ -8572,6 +8973,12 @@ main {
   .hero-product.is-revealed,
   .hero-progress-preview i,
   .hero-code-preview > div,
+  .mascot-intro-image,
+  .mascot-orbit,
+  .mascot-status i,
+  .nexa-guide-card,
+  .nexa-guide-avatar,
+  .nexa-guide-avatar i,
   .marketing-glow-one,
   .marketing-signal i,
   .faq-grid details[open] p {

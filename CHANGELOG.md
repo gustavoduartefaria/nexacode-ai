@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.3.2 — Nex, o mascote da jornada
+
+- Mascote pixel-art Nex integrado com recorte transparente e arquivo otimizado.
+- Apresentação dedicada na landing page com identidade própria do NexaCode AI.
+- Guia flutuante com mensagens contextuais em cadastro, login, aulas, planos, equipes e conta.
+- Atalhos úteis sem fingir que o personagem é uma IA remota.
+- Animações acessíveis, botão com estados claros e adaptação para telas pequenas.
+- Cache da PWA atualizado para distribuir o novo recurso visual.
+
 ## 4.3.1 — Movimento amigável e acessível
 
 - Entrada suave de conteúdo ao rolar nas páginas inicial, Planos e Equipes.

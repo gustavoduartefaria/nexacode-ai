@@ -14,6 +14,7 @@ import {
   Users,
   Zap,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { MarketingHeader } from "@/app/marketing-header";
 import MarketingTracker from "@/app/marketing-tracker";
@@ -144,6 +145,44 @@ export default async function Home() {
         <strong>3 linguagens</strong><i />
         <strong>Mentor contextual</strong><i />
         <strong>Progresso sincronizado</strong>
+      </section>
+
+      <section className="mascot-intro" data-reveal="up">
+        <div className="mascot-intro-visual" aria-hidden="true">
+          <span className="mascot-orbit mascot-orbit-one" />
+          <span className="mascot-orbit mascot-orbit-two" />
+          <Image
+            className="mascot-intro-image"
+            src="/mascot/nexa-mascot.webp"
+            alt=""
+            width={640}
+            height={640}
+            sizes="(max-width: 720px) 82vw, 470px"
+          />
+          <span className="mascot-status"><i /> NEX ESTÁ ONLINE</span>
+        </div>
+        <div className="mascot-intro-copy">
+          <span className="marketing-kicker"><Bot size={14} /> CONHEÇA O NEX</span>
+          <h2>Um parceiro de código que comemora cada avanço.</h2>
+          <p>
+            O Nex aparece nos momentos certos com mensagens, atalhos e motivação.
+            Quando a dúvida for técnica, ele te direciona para a aula, o laboratório
+            e o mentor contextual da plataforma.
+          </p>
+          <div className="mascot-points">
+            <span><Sparkles size={16} /> Incentivo sem pressão</span>
+            <span><Code2 size={16} /> Próximo passo mais claro</span>
+            <span><ShieldCheck size={16} /> Sem fingir uma IA remota</span>
+          </div>
+          <Link
+            className="marketing-secondary"
+            href={user ? "/app" : "/cadastro"}
+            data-marketing-event="cta_signup"
+            data-marketing-label="mascot-intro"
+          >
+            {user ? "Continuar com o Nex" : "Começar com o Nex"} <ArrowRight size={16} />
+          </Link>
+        </div>
       </section>
 
       <section className="marketing-section" id="metodo">
