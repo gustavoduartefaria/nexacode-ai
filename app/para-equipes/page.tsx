@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { MarketingHeader } from "@/app/marketing-header";
 import MarketingTracker from "@/app/marketing-tracker";
+import ScrollReveal from "@/app/scroll-reveal";
 import { getSessionUser } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -52,12 +53,13 @@ export default async function TeamsSalesPage() {
   return (
     <main className="marketing-page teams-sales-page">
       <MarketingTracker />
+      <ScrollReveal />
       <div className="marketing-grid" aria-hidden="true" />
       <div className="marketing-glow marketing-glow-one" aria-hidden="true" />
       <MarketingHeader authenticated={Boolean(user)} />
 
       <section className="teams-sales-hero">
-        <div>
+        <div data-reveal="up">
           <span className="marketing-kicker"><Building2 size={14} /> ESCOLAS E EMPRESAS</span>
           <h1>Transforme estudo individual em capacidade coletiva.</h1>
           <p>
@@ -83,7 +85,12 @@ export default async function TeamsSalesPage() {
             <span><CheckCircle2 size={14} /> Progresso salvo</span>
           </div>
         </div>
-        <aside className="teams-dashboard-preview" aria-label="Resumo do plano Equipes">
+        <aside
+          className="teams-dashboard-preview"
+          aria-label="Resumo do plano Equipes"
+          data-reveal="left"
+          style={{ "--reveal-delay": "120ms" } as React.CSSProperties}
+        >
           <span>PAINEL DA ORGANIZAÇÃO</span>
           <strong>Uma visão clara de quem está evoluindo.</strong>
           <div><Users size={18} /><span><b>10</b> membros incluídos</span></div>
@@ -93,14 +100,18 @@ export default async function TeamsSalesPage() {
       </section>
 
       <section className="marketing-section" id="como-funciona">
-        <div className="marketing-section-heading">
+        <div className="marketing-section-heading" data-reveal="up">
           <span className="marketing-kicker">OPERAÇÃO SIMPLES</span>
           <h2>Treinamento que o gestor consegue acompanhar.</h2>
           <p>Recursos existentes e verificáveis, sem promessas de relatórios que o produto ainda não entrega.</p>
         </div>
         <div className="teams-benefit-grid">
-          {benefits.map(({ icon: Icon, title, description }) => (
-            <article key={title}>
+          {benefits.map(({ icon: Icon, title, description }, index) => (
+            <article
+              key={title}
+              data-reveal="up"
+              style={{ "--reveal-delay": `${index * 70}ms` } as React.CSSProperties}
+            >
               <Icon size={23} />
               <h3>{title}</h3>
               <p>{description}</p>
@@ -109,16 +120,16 @@ export default async function TeamsSalesPage() {
         </div>
       </section>
 
-      <section className="teams-sales-process">
+      <section className="teams-sales-process" data-reveal="up">
         <span className="marketing-kicker">EM TRÊS ETAPAS</span>
         <div>
-          <article><b>01</b><strong>Assine</strong><p>Crie a conta responsável e conclua o checkout anual ou mensal.</p></article>
-          <article><b>02</b><strong>Organize</strong><p>Crie a organização, convide participantes e monte suas turmas.</p></article>
-          <article><b>03</b><strong>Acompanhe</strong><p>Use o painel para observar evolução e orientar o próximo ciclo.</p></article>
+          <article data-reveal="up"><b>01</b><strong>Assine</strong><p>Crie a conta responsável e conclua o checkout anual ou mensal.</p></article>
+          <article data-reveal="up" style={{ "--reveal-delay": "80ms" } as React.CSSProperties}><b>02</b><strong>Organize</strong><p>Crie a organização, convide participantes e monte suas turmas.</p></article>
+          <article data-reveal="up" style={{ "--reveal-delay": "160ms" } as React.CSSProperties}><b>03</b><strong>Acompanhe</strong><p>Use o painel para observar evolução e orientar o próximo ciclo.</p></article>
         </div>
       </section>
 
-      <section className="marketing-final">
+      <section className="marketing-final" data-reveal="up">
         <Building2 size={30} />
         <h2>Comece pequeno. Desenvolva capacidade que permanece.</h2>
         <p>Dez acessos, três linguagens e uma jornada técnica compartilhada.</p>

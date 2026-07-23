@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import { MarketingHeader } from "@/app/marketing-header";
 import MarketingTracker from "@/app/marketing-tracker";
+import ScrollReveal from "@/app/scroll-reveal";
 import { getSessionUser } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -50,13 +51,14 @@ export default async function Home() {
   return (
     <main className="marketing-page">
       <MarketingTracker />
+      <ScrollReveal />
       <div className="marketing-grid" aria-hidden="true" />
       <div className="marketing-glow marketing-glow-one" aria-hidden="true" />
       <div className="marketing-glow marketing-glow-two" aria-hidden="true" />
       <MarketingHeader authenticated={Boolean(user)} />
 
       <section className="marketing-hero">
-        <div className="marketing-hero-copy">
+        <div className="marketing-hero-copy" data-reveal="up">
           <span className="marketing-kicker">
             <i /> APRENDA · PRATIQUE · CONSTRUA
           </span>
@@ -93,7 +95,12 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="hero-product" aria-label="Prévia da plataforma NexaCode AI">
+        <div
+          className="hero-product"
+          aria-label="Prévia da plataforma NexaCode AI"
+          data-reveal="left"
+          style={{ "--reveal-delay": "120ms" } as React.CSSProperties}
+        >
           <div className="hero-product-bar">
             <span><i /><i /><i /></span>
             <small>nexacode.ai / workspace</small>
@@ -131,7 +138,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="marketing-signal">
+      <section className="marketing-signal" data-reveal="up">
         <span>UMA EXPERIÊNCIA ÚNICA</span>
         <strong>44 aulas</strong><i />
         <strong>3 linguagens</strong><i />
@@ -140,28 +147,28 @@ export default async function Home() {
       </section>
 
       <section className="marketing-section" id="metodo">
-        <div className="marketing-section-heading">
+        <div className="marketing-section-heading" data-reveal="up">
           <span className="marketing-kicker">MÉTODO NEXA</span>
           <h2>Aprendizado guiado por ciclos curtos e resultados visíveis.</h2>
           <p>Cada conceito passa por explicação, prática, verificação e aplicação.</p>
         </div>
         <div className="method-grid">
-          <article>
+          <article data-reveal="up">
             <span>01</span><GraduationCap size={25} />
             <h3>Entenda</h3>
             <p>Explicações diretas, analogias e código comentado para formar uma base sólida.</p>
           </article>
-          <article>
+          <article data-reveal="up" style={{ "--reveal-delay": "70ms" } as React.CSSProperties}>
             <span>02</span><TerminalSquare size={25} />
             <h3>Experimente</h3>
             <p>Laboratório com execução isolada, saída real e limites seguros no navegador.</p>
           </article>
-          <article>
+          <article data-reveal="up" style={{ "--reveal-delay": "140ms" } as React.CSSProperties}>
             <span>03</span><Bot size={25} />
             <h3>Receba orientação</h3>
             <p>O mentor contextual dá pistas graduais, revisa decisões e sugere o próximo passo.</p>
           </article>
-          <article>
+          <article data-reveal="up" style={{ "--reveal-delay": "210ms" } as React.CSSProperties}>
             <span>04</span><Gauge size={25} />
             <h3>Meça a evolução</h3>
             <p>Progresso, sequência, XP e metas sincronizados em todos os dispositivos.</p>
@@ -170,13 +177,20 @@ export default async function Home() {
       </section>
 
       <section className="marketing-section language-marketing" id="trilhas">
-        <div className="marketing-section-heading">
+        <div className="marketing-section-heading" data-reveal="up">
           <span className="marketing-kicker">TRILHAS DE ENGENHARIA</span>
           <h2>Três linguagens. Uma única jornada profissional.</h2>
         </div>
         <div className="marketing-language-grid">
           {languages.map((language, index) => (
-            <article key={language.name} style={{ "--track-color": language.color } as React.CSSProperties}>
+            <article
+              key={language.name}
+              data-reveal="up"
+              style={{
+                "--track-color": language.color,
+                "--reveal-delay": `${index * 80}ms`,
+              } as React.CSSProperties}
+            >
               <span>{language.tag}</span>
               <small>TRILHA 0{index + 1}</small>
               <h3>{language.name}</h3>
@@ -188,15 +202,15 @@ export default async function Home() {
       </section>
 
       <section className="marketing-section marketing-outcomes">
-        <div className="marketing-section-heading">
+        <div className="marketing-section-heading" data-reveal="up">
           <span className="marketing-kicker">PARA QUEM QUER AVANÇAR</span>
           <h2>Uma rota clara entre “estou começando” e “consigo construir”.</h2>
           <p>Escolha seu objetivo e use a plataforma para manter prática, contexto e progresso no mesmo lugar.</p>
         </div>
         <div className="outcome-grid">
-          <article><span>01</span><h3>Primeiro emprego</h3><p>Fortaleça lógica, leitura de código e projetos que demonstram fundamentos.</p></article>
-          <article><span>02</span><h3>Mudança de carreira</h3><p>Estude em ciclos curtos e acompanhe o avanço sem depender de uma trilha improvisada.</p></article>
-          <article><span>03</span><h3>Faculdade e prática</h3><p>Transforme conceitos abstratos em exemplos, desafios e checkpoints verificáveis.</p></article>
+          <article data-reveal="up"><span>01</span><h3>Primeiro emprego</h3><p>Fortaleça lógica, leitura de código e projetos que demonstram fundamentos.</p></article>
+          <article data-reveal="up" style={{ "--reveal-delay": "80ms" } as React.CSSProperties}><span>02</span><h3>Mudança de carreira</h3><p>Estude em ciclos curtos e acompanhe o avanço sem depender de uma trilha improvisada.</p></article>
+          <article data-reveal="up" style={{ "--reveal-delay": "160ms" } as React.CSSProperties}><span>03</span><h3>Faculdade e prática</h3><p>Transforme conceitos abstratos em exemplos, desafios e checkpoints verificáveis.</p></article>
         </div>
         <Link
           className="marketing-secondary outcome-pricing-link"
@@ -208,7 +222,7 @@ export default async function Home() {
         </Link>
       </section>
 
-      <section className="teams-callout">
+      <section className="teams-callout" data-reveal="up">
         <div>
           <span className="marketing-kicker">NEXACODE PARA EQUIPES</span>
           <h2>Transforme aprendizagem em capacidade coletiva.</h2>
@@ -234,21 +248,21 @@ export default async function Home() {
       </section>
 
       <section className="marketing-section marketing-faq">
-        <div className="marketing-section-heading">
+        <div className="marketing-section-heading" data-reveal="up">
           <span className="marketing-kicker">DÚVIDAS ANTES DE COMEÇAR</span>
           <h2>O essencial, sem letras pequenas.</h2>
         </div>
         <div className="faq-grid">
-          <details><summary>Preciso saber programar?</summary><p>Não. A trilha começa pelos fundamentos e aumenta a dificuldade progressivamente.</p></details>
-          <details><summary>O plano gratuito pede cartão?</summary><p>Não. Você pode criar a conta Starter e começar sem cartão.</p></details>
-          <details><summary>O mentor é uma IA remota?</summary><p>O produto identifica a origem da resposta. Sem integração remota configurada, usa o motor didático local.</p></details>
-          <details><summary>Como o acesso pago é liberado?</summary><p>Após a aprovação na Cakto, o webhook autenticado atualiza o plano da conta.</p></details>
-          <details><summary>Funciona no celular?</summary><p>Sim. A interface é responsiva e também pode ser instalada como aplicativo PWA.</p></details>
-          <details><summary>Posso cancelar?</summary><p>O gerenciamento ocorre pelo portal do provedor de cobrança configurado para a conta.</p></details>
+          <details data-reveal="up"><summary>Preciso saber programar?</summary><p>Não. A trilha começa pelos fundamentos e aumenta a dificuldade progressivamente.</p></details>
+          <details data-reveal="up" style={{ "--reveal-delay": "50ms" } as React.CSSProperties}><summary>O plano gratuito pede cartão?</summary><p>Não. Você pode criar a conta Starter e começar sem cartão.</p></details>
+          <details data-reveal="up" style={{ "--reveal-delay": "100ms" } as React.CSSProperties}><summary>O mentor é uma IA remota?</summary><p>O produto identifica a origem da resposta. Sem integração remota configurada, usa o motor didático local.</p></details>
+          <details data-reveal="up" style={{ "--reveal-delay": "150ms" } as React.CSSProperties}><summary>Como o acesso pago é liberado?</summary><p>Após a aprovação na Cakto, o webhook autenticado atualiza o plano da conta.</p></details>
+          <details data-reveal="up" style={{ "--reveal-delay": "200ms" } as React.CSSProperties}><summary>Funciona no celular?</summary><p>Sim. A interface é responsiva e também pode ser instalada como aplicativo PWA.</p></details>
+          <details data-reveal="up" style={{ "--reveal-delay": "250ms" } as React.CSSProperties}><summary>Posso cancelar?</summary><p>O gerenciamento ocorre pelo portal do provedor de cobrança configurado para a conta.</p></details>
         </div>
       </section>
 
-      <section className="marketing-final">
+      <section className="marketing-final" data-reveal="up">
         <Sparkles size={30} />
         <h2>Seu próximo projeto começa com uma aula.</h2>
         <p>Entre gratuitamente e transforme curiosidade em código que funciona.</p>

@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.3.1 — Movimento amigável e acessível
+
+- Entrada suave de conteúdo ao rolar nas páginas inicial, Planos e Equipes.
+- Sequência visual nos cards de método, linguagens, benefícios, preços e perguntas.
+- Prévia da plataforma com progresso, código e flutuação discretamente animados.
+- Microinterações aprimoradas em botões, indicadores e perguntas frequentes.
+- Fallback seguro sem conteúdo oculto quando JavaScript não estiver disponível.
+- Respeito integral à preferência de movimento reduzido do sistema.
+- Cache da PWA renovado para distribuir a experiência visual atualizada.
+
 ## 4.3.0 — Funil comercial e aquisição
 
 - Rastreamento próprio de UTMs, visualizações e cliques sem coletar dados pessoais.

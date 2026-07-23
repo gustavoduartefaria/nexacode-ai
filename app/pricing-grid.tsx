@@ -23,7 +23,7 @@ export function PricingGrid({
 }) {
   return (
     <>
-      <div className="pricing-cycle" aria-label="Periodicidade da cobrança">
+      <div className="pricing-cycle" aria-label="Periodicidade da cobrança" data-reveal="up">
         <Link
           href="/precos?cycle=monthly"
           className={cycle === "monthly" ? "active" : ""}
@@ -40,14 +40,16 @@ export function PricingGrid({
         </Link>
       </div>
       <section className="pricing-grid">
-        {planOrder.map((planId) => {
+        {planOrder.map((planId, index) => {
           const plan = plans[planId];
           const total = cycle === "annual" ? plan.annualPrice : plan.monthlyPrice;
           const monthlyEquivalent = cycle === "annual" ? total / 12 : total;
           return (
             <article
               className={`${planId === "pro" ? "featured" : ""}${intent === planId ? " pricing-intent" : ""}`}
+              data-reveal="up"
               key={plan.id}
+              style={{ "--reveal-delay": `${index * 90}ms` } as React.CSSProperties}
             >
               {planId === "pro" && <span className="pricing-popular">MAIS ESCOLHIDO</span>}
               <div className="pricing-card-head">

@@ -243,7 +243,7 @@ test("PWA não armazena páginas privadas e Next.js envia headers de segurança"
     read("public/manifest.webmanifest"),
     read("proxy.ts"),
   ]);
-  assert.match(serviceWorker, /nexacode-ai-v6/);
+  assert.match(serviceWorker, /nexacode-ai-v7/);
   assert.match(serviceWorker, /url\.pathname\.startsWith\("\/api\/"\)/);
   assert.match(serviceWorker, /url\.pathname\.startsWith\("\/conta"\)/);
   assert.match(nextConfig, /X-Content-Type-Options/);
