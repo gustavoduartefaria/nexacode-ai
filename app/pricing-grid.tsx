@@ -12,7 +12,15 @@ const money = new Intl.NumberFormat("pt-BR", {
   maximumFractionDigits: 2,
 });
 
-export function PricingGrid({ authenticated, cycle }: { authenticated: boolean; cycle: Cycle }) {
+export function PricingGrid({
+  authenticated,
+  cycle,
+  intent,
+}: {
+  authenticated: boolean;
+  cycle: Cycle;
+  intent?: "pro" | "teams";
+}) {
   return (
     <>
       <div className="pricing-cycle" aria-label="Periodicidade da cobrança">
@@ -37,7 +45,10 @@ export function PricingGrid({ authenticated, cycle }: { authenticated: boolean; 
           const total = cycle === "annual" ? plan.annualPrice : plan.monthlyPrice;
           const monthlyEquivalent = cycle === "annual" ? total / 12 : total;
           return (
-            <article className={planId === "pro" ? "featured" : ""} key={plan.id}>
+            <article
+              className={`${planId === "pro" ? "featured" : ""}${intent === planId ? " pricing-intent" : ""}`}
+              key={plan.id}
+            >
               {planId === "pro" && <span className="pricing-popular">MAIS ESCOLHIDO</span>}
               <div className="pricing-card-head">
                 <span className="pricing-plan-icon">

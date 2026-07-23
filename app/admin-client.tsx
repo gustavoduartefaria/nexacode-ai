@@ -22,6 +22,12 @@ type Overview = {
     usersWithProgress: number;
     totalXp: number;
     completionRate: number;
+    marketing: {
+      pageViews: number;
+      ctaClicks: number;
+      signupClicks: number;
+      teamsClicks: number;
+    };
   };
   users: Array<{
     id: string;
@@ -89,6 +95,8 @@ export default function AdminClient() {
     { label: "Taxa de conclusão", value: `${overview.metrics.completionRate}%`, icon: Activity },
     { label: "Cancelamentos", value: overview.metrics.canceledSubscriptions, icon: CreditCard },
     { label: "Erros pendentes", value: overview.metrics.unresolvedErrors, icon: ShieldCheck },
+    { label: "Visitas (30 dias)", value: overview.metrics.marketing.pageViews, icon: Activity },
+    { label: "Cliques de conversão", value: overview.metrics.marketing.ctaClicks, icon: Sparkles },
   ];
   return (
     <div className="admin-dashboard">

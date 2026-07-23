@@ -42,14 +42,26 @@ export default function BillingButton({
   };
   if (!authenticated) {
     return (
-      <Link className="pricing-button" href="/cadastro">
+      <Link
+        className="pricing-button"
+        href={`/cadastro?plan=${planId}&cycle=${cycle}`}
+        data-marketing-event="cta_checkout"
+        data-marketing-label={`${planId}-${cycle}`}
+      >
         Criar conta para assinar <ArrowRight size={16} />
       </Link>
     );
   }
   return (
     <>
-      <button className="pricing-button" type="button" onClick={checkout} disabled={loading}>
+      <button
+        className="pricing-button"
+        type="button"
+        onClick={checkout}
+        disabled={loading}
+        data-marketing-event="cta_checkout"
+        data-marketing-label={`${planId}-${cycle}`}
+      >
         {loading ? <LoaderCircle className="auth-spin" size={17} /> : null}
         {loading ? "Abrindo checkout..." : `Escolher ${planId === "pro" ? "Pro" : "Equipes"}`}
         {!loading && <ArrowRight size={16} />}

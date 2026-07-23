@@ -41,6 +41,7 @@ repositório.
 - Organizações, membros, papéis, convites e turmas.
 - Certificados verificáveis, painel administrativo, auditoria e LGPD.
 - Central de notificações persistentes para conta, certificados e cobrança.
+- Funil comercial com UTMs, eventos de conversão e página dedicada ao plano Equipes.
 - Tema claro/escuro, PWA, acessibilidade e layout responsivo.
 
 ## Arquitetura
@@ -104,7 +105,8 @@ As URLs são segredos. Nunca as envie ao Git ou coloque em variáveis
 7. Faça o deploy e confirme `/api/health` pelo domínio da Vercel.
 
 Execute as migrações antes do primeiro deploy. Instruções detalhadas estão em
-`DEPLOY-VERCEL-RAILWAY.md`, `CAKTO-INTEGRATION.md` e `SAAS-SETUP.md`.
+`DEPLOY-VERCEL-RAILWAY.md`, `CAKTO-INTEGRATION.md`, `SAAS-SETUP.md` e
+`MARKETING-PLAYBOOK.md`.
 
 ## Verificação
 
@@ -136,11 +138,13 @@ informa a condição real e o mentor usa explicitamente o motor didático local.
 - `/cadastro` e `/entrar` — autenticação;
 - `/app` — plataforma de aprendizagem;
 - `/precos` — planos;
+- `/para-equipes` — oferta comercial para escolas e empresas;
 - `/conta` — perfil e privacidade;
 - `/equipe` — organizações e turmas;
 - `/admin` — operações protegidas;
 - `/certificado/CODIGO` — verificação pública;
 - `/api/health` — saúde do serviço e do Supabase.
+- `/api/marketing/events` — eventos anônimos de aquisição e conversão.
 - `/api/billing/cakto/webhook` — recebimento autenticado de eventos da Cakto.
 
 ## Segurança

@@ -7,7 +7,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const protocol =
     headerStore.get("x-forwarded-proto") ?? (host.includes("localhost") ? "http" : "https");
   const origin = `${protocol}://${host}`;
-  return ["/", "/precos", "/termos", "/privacidade"].map((path) => ({
+  return ["/", "/precos", "/para-equipes", "/termos", "/privacidade"].map((path) => ({
     url: `${origin}${path}`,
     lastModified: new Date(),
     changeFrequency: path === "/" ? "weekly" : "monthly",

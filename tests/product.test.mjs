@@ -190,13 +190,14 @@ test("preferências de IA, histórico e certificados funcionam no servidor", asy
 });
 
 test("landing, cadastro, preços, conta, equipe e admin são rotas reais", async () => {
-  const [landing, auth, pricing, pricingGrid, account, team, admin] = await Promise.all([
+  const [landing, auth, pricing, pricingGrid, account, team, teamsSales, admin] = await Promise.all([
     read("app/page.tsx"),
     read("app/auth-form.tsx"),
     read("app/precos/page.tsx"),
     read("app/pricing-grid.tsx"),
     read("app/conta/page.tsx"),
     read("app/equipe/page.tsx"),
+    read("app/para-equipes/page.tsx"),
     read("app/admin/page.tsx"),
   ]);
   assert.match(landing, /Programação deixa de ser teoria/);
@@ -209,7 +210,30 @@ test("landing, cadastro, preços, conta, equipe e admin são rotas reais", async
   assert.match(pricingGrid, /Checkout protegido pela Cakto/);
   assert.match(account, /getSessionUser/);
   assert.match(team, /planId !== "teams"/);
+  assert.match(teamsSales, /10 pessoas incluídas/);
+  assert.match(teamsSales, /data-marketing-event="cta_teams"/);
   assert.match(admin, /role !== "admin"/);
+});
+
+test("funil comercial rastreia campanhas sem dados pessoais e preserva intenção de compra", async () => {
+  const [tracker, events, registration, billing, admin, playbook] = await Promise.all([
+    read("app/marketing-tracker.tsx"),
+    read("app/api/marketing/events/route.ts"),
+    read("app/cadastro/page.tsx"),
+    read("app/billing-button.tsx"),
+    read("app/api/admin/overview/route.ts"),
+    read("MARKETING-PLAYBOOK.md"),
+  ]);
+  assert.match(tracker, /utm_source/);
+  assert.match(tracker, /data-marketing-event/);
+  assert.doesNotMatch(tracker, /localStorage|sessionStorage/);
+  assert.match(events, /marketing\.event/);
+  assert.match(events, /enforceRateLimit/);
+  assert.match(events, /cleanRecord/);
+  assert.match(registration, /desiredPlan/);
+  assert.match(billing, /\/cadastro\?plan=/);
+  assert.match(admin, /pageViews/);
+  assert.match(playbook, /Calendário inicial de 30 dias/);
 });
 
 test("PWA não armazena páginas privadas e Next.js envia headers de segurança", async () => {
@@ -219,7 +243,7 @@ test("PWA não armazena páginas privadas e Next.js envia headers de segurança"
     read("public/manifest.webmanifest"),
     read("proxy.ts"),
   ]);
-  assert.match(serviceWorker, /nexacode-ai-v5/);
+  assert.match(serviceWorker, /nexacode-ai-v6/);
   assert.match(serviceWorker, /url\.pathname\.startsWith\("\/api\/"\)/);
   assert.match(serviceWorker, /url\.pathname\.startsWith\("\/conta"\)/);
   assert.match(nextConfig, /X-Content-Type-Options/);

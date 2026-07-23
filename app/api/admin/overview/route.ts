@@ -1,4 +1,4 @@
-import { and, count, desc, eq, isNull, sum } from "drizzle-orm";
+import { and, count, desc, eq, gte, isNull, sum } from "drizzle-orm";
 import { getDb } from "@/db";
 import {
   aiUsage,
@@ -32,6 +32,7 @@ export async function GET(request: Request) {
     recentAudit,
     progressRows,
     recentUsers,
+    marketingRows,
   ] = await Promise.all([
     db.select({ value: count() }).from(users),
     db
@@ -82,6 +83,17 @@ export async function GET(request: Request) {
       .leftJoin(studentProfiles, eq(studentProfiles.email, users.email))
       .orderBy(desc(users.createdAt))
       .limit(20),
+    db
+      .select({ metadataJson: auditLogs.metadataJson })
+      .from(auditLogs)
+      .where(
+        and(
+          eq(auditLogs.action, "marketing.event"),
+          gte(auditLogs.createdAt, new Date(Date.now() - 30 * 86_400_000)),
+        ),
+      )
+      .orderBy(desc(auditLogs.createdAt))
+      .limit(5000),
   ]);
   const lessonCounts = new Map<string, number>();
   let completedLessonCount = 0;
@@ -103,6 +115,23 @@ export async function GET(request: Request) {
     .slice(0, 5)
     .map(([lessonId, completions]) => ({ lessonId, completions }));
   const totalUsers = Number(userCount[0]?.value ?? 0);
+  const marketing = {
+    pageViews: 0,
+    ctaClicks: 0,
+    signupClicks: 0,
+    teamsClicks: 0,
+  };
+  for (const row of marketingRows) {
+    try {
+      const metadata = JSON.parse(row.metadataJson) as { event?: string };
+      if (metadata.event === "page_view") marketing.pageViews += 1;
+      if (metadata.event?.startsWith("cta_")) marketing.ctaClicks += 1;
+      if (metadata.event === "cta_signup") marketing.signupClicks += 1;
+      if (metadata.event === "cta_teams") marketing.teamsClicks += 1;
+    } catch {
+      // Eventos inválidos continuam disponíveis na auditoria, sem quebrar os agregados.
+    }
+  }
   return Response.json({
     metrics: {
       users: totalUsers,
@@ -116,6 +145,7 @@ export async function GET(request: Request) {
       completionRate: totalUsers
         ? Math.round((completedLessonCount / (totalUsers * 44)) * 1000) / 10
         : 0,
+      marketing,
     },
     users: recentUsers,
     recentAudit,
