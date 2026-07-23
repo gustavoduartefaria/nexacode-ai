@@ -1,9 +1,34 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import test from "node:test";
 
 const root = new URL("../", import.meta.url);
 const read = (path) => readFile(new URL(path, root), "utf8");
+
+test("curso escrito completo possui 24 aulas e todos os materiais finais", async () => {
+  const moduleFolders = (await readdir(new URL("../Curso/", import.meta.url), {
+    withFileTypes: true,
+  })).filter((entry) => entry.isDirectory() && entry.name.startsWith("Modulo"));
+  const lessonFiles = (
+    await Promise.all(
+      moduleFolders.map((entry) =>
+        readdir(new URL(`../Curso/${entry.name}/`, import.meta.url)),
+      ),
+    )
+  ).flat().filter((name) => /^Aula\d+\.md$/.test(name));
+  const [exam, guide, complete, progress] = await Promise.all([
+    read("Curso/Simulados/SimuladoFinal.md"),
+    read("Curso/GuiaDoAluno.md"),
+    read("Curso/CursoCompleto.md"),
+    read("Curso/progresso.json"),
+  ]);
+  assert.equal(moduleFolders.length, 8);
+  assert.equal(lessonFiles.length, 24);
+  assert.equal((exam.match(/^\d+\. \*\*/gm) ?? []).length, 100);
+  assert.match(guide, /Como estudar/);
+  assert.match(complete, /Aula 24/);
+  assert.equal(JSON.parse(progress).totalLessons, 24);
+});
 
 test("mantém as 44 aulas de JavaScript, Python e C++", async () => {
   const [app, data, multi, mentor] = await Promise.all([
@@ -265,7 +290,7 @@ test("PWA não armazena páginas privadas e Next.js envia headers de segurança"
     read("public/manifest.webmanifest"),
     read("proxy.ts"),
   ]);
-  assert.match(serviceWorker, /nexacode-ai-v10/);
+  assert.match(serviceWorker, /nexacode-ai-v11/);
   assert.match(serviceWorker, /url\.pathname\.startsWith\("\/api\/"\)/);
   assert.match(serviceWorker, /url\.pathname\.startsWith\("\/conta"\)/);
   assert.match(nextConfig, /X-Content-Type-Options/);

@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.5.0 — Curso escrito completo
+
+- Gera 24 aulas extensas em Markdown organizadas em 8 módulos pedagógicos.
+- Inclui 240 questões objetivas, 120 dissertativas, 72 estudos de caso e 24 desafios.
+- Adiciona simulado final com 100 questões, gabaritos, projeto, glossário, guia e cronograma.
+- Mantém controle determinístico das aulas processadas sem usar transcrições de terceiros.
+
 ## 4.4.0 — JavaScript em conteúdo escrito
 
 - Substitui a referência em vídeo por material escrito original nas 24 aulas de JavaScript.

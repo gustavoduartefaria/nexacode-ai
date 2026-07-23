@@ -1,6 +1,6 @@
 {
   "name": "nexacode-ai",
-  "version": "4.4.0",
+  "version": "4.5.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -16,7 +16,8 @@
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "brand:icons": "node scripts/generate-brand-icons.mjs"
+    "brand:icons": "node scripts/generate-brand-icons.mjs",
+    "course:generate": "node scripts/generate-written-course.mjs"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",

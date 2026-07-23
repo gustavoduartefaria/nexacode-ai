@@ -1,0 +1,30 @@
+# Checklist de competências
+
+- [ ] Explico e aplico Variáveis: let e const.
+- [ ] Explico e aplico Tipos e valores.
+- [ ] Explico e aplico Operadores sem mistério.
+- [ ] Explico e aplico if, else e decisões.
+- [ ] Explico e aplico Loops com propósito.
+- [ ] Explico e aplico Erros que ensinam.
+- [ ] Explico e aplico Funções e retorno.
+- [ ] Explico e aplico Arrow functions.
+- [ ] Explico e aplico Escopo e closures.
+- [ ] Explico e aplico Arrays na prática.
+- [ ] Explico e aplico map, filter e reduce.
+- [ ] Explico e aplico Objetos e desestruturação.
+- [ ] Explico e aplico Selecionando elementos.
+- [ ] Explico e aplico Eventos e interação.
+- [ ] Explico e aplico Formulários confiáveis.
+- [ ] Explico e aplico Entendendo Promises.
+- [ ] Explico e aplico async e await.
+- [ ] Explico e aplico Consumindo APIs.
+- [ ] Explico e aplico Módulos.
+- [ ] Explico e aplico Classes com propósito.
+- [ ] Explico e aplico Imutabilidade prática.
+- [ ] Explico e aplico Projeto: Task Flow.
+- [ ] Explico e aplico Projeto: Data Pulse.
+- [ ] Explico e aplico Projeto final: Dev Portfolio.
+- [ ] Valido entradas e comunico falhas.
+- [ ] Escrevo testes para caso normal, fronteira e erro.
+- [ ] Organizo código em módulos com contratos claros.
+- [ ] Publico e documento uma aplicação completa.

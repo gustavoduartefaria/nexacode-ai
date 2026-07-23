@@ -1,0 +1,127 @@
+{
+  "source": "Conteúdo original do NexaCode AI",
+  "generatedAt": "2026-07-23T22:43:25.455Z",
+  "totalLessons": 24,
+  "lessons": [
+    {
+      "id": "variaveis",
+      "lesson": 1,
+      "processed": true
+    },
+    {
+      "id": "tipos",
+      "lesson": 2,
+      "processed": true
+    },
+    {
+      "id": "operadores",
+      "lesson": 3,
+      "processed": true
+    },
+    {
+      "id": "condicionais",
+      "lesson": 4,
+      "processed": true
+    },
+    {
+      "id": "loops",
+      "lesson": 5,
+      "processed": true
+    },
+    {
+      "id": "erros",
+      "lesson": 6,
+      "processed": true
+    },
+    {
+      "id": "funcoes-base",
+      "lesson": 7,
+      "processed": true
+    },
+    {
+      "id": "arrow-functions",
+      "lesson": 8,
+      "processed": true
+    },
+    {
+      "id": "escopo-closures",
+      "lesson": 9,
+      "processed": true
+    },
+    {
+      "id": "arrays",
+      "lesson": 10,
+      "processed": true
+    },
+    {
+      "id": "metodos-array",
+      "lesson": 11,
+      "processed": true
+    },
+    {
+      "id": "objetos",
+      "lesson": 12,
+      "processed": true
+    },
+    {
+      "id": "dom-selecao",
+      "lesson": 13,
+      "processed": true
+    },
+    {
+      "id": "eventos",
+      "lesson": 14,
+      "processed": true
+    },
+    {
+      "id": "formularios",
+      "lesson": 15,
+      "processed": true
+    },
+    {
+      "id": "promises",
+      "lesson": 16,
+      "processed": true
+    },
+    {
+      "id": "async-await",
+      "lesson": 17,
+      "processed": true
+    },
+    {
+      "id": "fetch",
+      "lesson": 18,
+      "processed": true
+    },
+    {
+      "id": "modulos",
+      "lesson": 19,
+      "processed": true
+    },
+    {
+      "id": "classes",
+      "lesson": 20,
+      "processed": true
+    },
+    {
+      "id": "imutabilidade",
+      "lesson": 21,
+      "processed": true
+    },
+    {
+      "id": "projeto-tarefas",
+      "lesson": 22,
+      "processed": true
+    },
+    {
+      "id": "projeto-api",
+      "lesson": 23,
+      "processed": true
+    },
+    {
+      "id": "projeto-final",
+      "lesson": 24,
+      "processed": true
+    }
+  ]
+}

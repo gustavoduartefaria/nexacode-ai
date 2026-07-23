@@ -7,6 +7,13 @@ leitura apresenta uma visão técnica, três pontos-chave, um erro comum e uma p
 orientada. O conteúdo complementa teoria, exemplos, micromissões, revisão de
 engenharia e checkpoints sem depender de vídeos externos.
 
+## Curso escrito completo
+
+O diretório `Curso/` contém 24 aulas distribuídas em 8 módulos, guia do aluno,
+cronograma, glossário, banco de exercícios, projeto final, checklist de competências,
+simulado de 100 questões e gabarito. Execute `npm run course:generate` para regenerar
+os materiais a partir do conteúdo original da plataforma.
+
 SaaS educacional para aprender JavaScript, Python e C++ com prática orientada,
 mentor contextual e progresso sincronizado. A versão 4.2 usa Next.js oficial em
 Node.js, PostgreSQL no Supabase, frontend na Vercel e backend no Railway.
