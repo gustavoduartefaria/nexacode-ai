@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { certificates } from "@/db/schema";
+import { certificates, notifications } from "@/db/schema";
 import { allLessons, lessonsByLanguage } from "@/lib/course-data";
 import { recordAudit } from "@/lib/audit";
 import { requireSessionUser } from "@/lib/auth";
@@ -76,7 +76,7 @@ export async function PUT(request: Request) {
         .replace(/-/g, "")
         .slice(0, 12)
         .toUpperCase()}`;
-      await db
+      const inserted = await db
         .insert(certificates)
         .values({
           id: crypto.randomUUID(),
@@ -85,7 +85,19 @@ export async function PUT(request: Request) {
           verificationCode,
           issuedAt: new Date(),
         })
-        .onConflictDoNothing();
+        .onConflictDoNothing()
+        .returning({ id: certificates.id });
+      if (inserted.length) {
+        const languageName = language === "javascript" ? "JavaScript" : language === "python" ? "Python" : "C++";
+        await db.insert(notifications).values({
+          id: crypto.randomUUID(),
+          userId: auth.user.id,
+          title: `Certificado de ${languageName} liberado`,
+          message: "Sua trilha foi concluída. O certificado verificável já está disponível na sua conta.",
+          kind: "achievement",
+          createdAt: new Date(),
+        });
+      }
     }
   }
   await recordAudit("progress.updated", "learning_progress", {

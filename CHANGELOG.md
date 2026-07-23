@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.2.0 — Mentor híbrido, segurança e notificações
+
+- Mentor híbrido com OpenAI Responses API opcional e fallback local identificado.
+- Contabilização atômica de uso do mentor e registro da origem de cada resposta.
+- Central de notificações persistentes para cadastro, certificados e cobrança.
+- Proteção central de origem para chamadas mutáveis da API.
+- Remoção do adaptador legado e não utilizado de autenticação do ChatGPT.
+
 ## 4.1.0 — Cakto + Railway
 
 - Backend preparado para Railway e proxy de APIs configurável na Vercel.

@@ -85,6 +85,17 @@ type ChatMessage = {
   role: "mentor" | "student";
   text: string;
   answer?: MentorAnswer;
+  engine?: string;
+  disclosure?: string;
+};
+
+type AppNotification = {
+  id: string;
+  title: string;
+  message: string;
+  kind: string;
+  readAt: string | null;
+  createdAt: string;
 };
 
 type InstallPromptEvent = Event & {
@@ -263,6 +274,7 @@ export default function NexaCodeApp({
   const [searchOpen, setSearchOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [profileEditing, setProfileEditing] = useState(false);
   const [draftName, setDraftName] = useState(progress.name);
   const [resetOpen, setResetOpen] = useState(false);
@@ -382,6 +394,16 @@ export default function NexaCodeApp({
       window.removeEventListener("beforeinstallprompt", handleInstall);
     };
   }, [accountStorageKey, allowedLessonIds, cloudProgress, user.displayName, user.id]);
+
+  useEffect(() => {
+    fetch("/api/notifications")
+      .then(async (response) => {
+        if (!response.ok) return;
+        const result = (await response.json()) as { notifications?: AppNotification[] };
+        setNotifications(result.notifications ?? []);
+      })
+      .catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     if (hydrated) {
@@ -571,6 +593,8 @@ export default function NexaCodeApp({
       const result = (await response.json()) as {
         answer?: MentorAnswer;
         error?: string;
+        engine?: string;
+        disclosure?: string;
       };
       if (!response.ok && response.status < 500) {
         const message = result.error ?? "O mentor não está disponível para esta conta.";
@@ -591,6 +615,8 @@ export default function NexaCodeApp({
           role: "mentor",
           text: result.answer!.message,
           answer: result.answer,
+          engine: result.engine,
+          disclosure: result.disclosure,
         },
       ]);
     } catch (error) {
@@ -1181,7 +1207,7 @@ export default function NexaCodeApp({
             <h1>Como posso destravar seu aprendizado?</h1>
           </div>
           <span className="local-chip">
-            <ShieldCheck size={14} /> Motor local · uso controlado
+            <ShieldCheck size={14} /> NEX Tutor · uso controlado
           </span>
         </div>
         <div className="chat-messages" aria-live="polite">
@@ -1215,6 +1241,11 @@ export default function NexaCodeApp({
                       <strong>Próximo passo:</strong> {message.answer.nextStep}
                     </span>
                   </div>
+                )}
+                {message.disclosure && (
+                  <small className="mentor-disclosure">
+                    {message.engine === "openai-responses" ? "IA REMOTA" : "MOTOR LOCAL"} · {message.disclosure}
+                  </small>
                 )}
               </div>
             </article>
@@ -1566,23 +1597,36 @@ export default function NexaCodeApp({
               <button
                 className="icon-button notification-button"
                 aria-label="Notificações"
-                onClick={() => setNotificationsOpen((current) => !current)}
+                aria-expanded={notificationsOpen}
+                onClick={() => {
+                  const opening = !notificationsOpen;
+                  setNotificationsOpen(opening);
+                  if (opening && notifications.some((item) => !item.readAt)) {
+                    setNotifications((items) => items.map((item) => ({ ...item, readAt: item.readAt ?? new Date().toISOString() })));
+                    void fetch("/api/notifications", { method: "PATCH" });
+                  }
+                }}
               >
                 <Activity size={18} />
-                <i />
+                {notifications.some((item) => !item.readAt) && <i />}
               </button>
               {notificationsOpen && (
-                <div className="notification-popover">
-                  <span>NOVA MISSÃO</span>
-                  <strong>{nextLesson.title}</strong>
-                  <p>Uma aula curta já é suficiente para manter sua sequência.</p>
-                  <button
-                    onClick={() => {
-                      setNotificationsOpen(false);
-                      openLesson(nextLesson.id);
-                    }}
-                  >
-                    Começar agora
+                <div className="notification-popover" role="status">
+                  <span>CENTRAL DE ATUALIZAÇÕES</span>
+                  {notifications.length ? notifications.slice(0, 4).map((notification) => (
+                    <article key={notification.id}>
+                      <strong>{notification.title}</strong>
+                      <p>{notification.message}</p>
+                      <small>{new Date(notification.createdAt).toLocaleDateString("pt-BR")}</small>
+                    </article>
+                  )) : (
+                    <article>
+                      <strong>{nextLesson.title}</strong>
+                      <p>Uma aula curta já é suficiente para manter sua sequência.</p>
+                    </article>
+                  )}
+                  <button onClick={() => { setNotificationsOpen(false); openLesson(nextLesson.id); }}>
+                    Continuar estudando
                   </button>
                 </div>
               )}

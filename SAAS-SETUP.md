@@ -29,7 +29,7 @@ Cadastre no Railway e na Vercel:
 - `APP_ENV=production`;
 - `APP_URL`;
 - `ADMIN_EMAILS`;
-- variáveis Cakto e Resend.
+- variáveis Cakto, Resend e, opcionalmente, OpenAI.
 
 Cadastre `BACKEND_URL` somente na Vercel, apontando para o domínio Railway.
 
@@ -48,6 +48,18 @@ O segredo, os IDs de oferta e a idempotência são verificados no servidor.
 Valide seu domínio, configure `RESEND_API_KEY` e use um remetente autorizado em
 `EMAIL_FROM`. Sem essas variáveis, o cadastro continua disponível, porém
 confirmação, recuperação e convites informam que o envio está pendente.
+
+## Mentor remoto opcional
+
+O mentor didático local funciona sem serviços externos. Para habilitar respostas
+remotas, configure somente no Railway:
+
+- `AI_PROVIDER=openai`;
+- `OPENAI_API_KEY`;
+- `OPENAI_MODEL=gpt-5.6-luna` ou outro modelo compatível com Responses API.
+
+A chave nunca deve ser cadastrada como `NEXT_PUBLIC_*`. Se a API remota falhar, o
+produto usa o motor local e identifica a contingência na própria resposta.
 
 ## Administração
 

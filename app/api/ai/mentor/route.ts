@@ -1,8 +1,9 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { aiHistory, aiUsage, studentProfiles } from "@/db/schema";
 import { allLessons } from "@/lib/course-data";
 import { buildMentorAnswer } from "@/lib/mentor";
+import { generateRemoteMentorAnswer, remoteMentorConfigured } from "@/lib/openai-mentor";
 import { requireSessionUser } from "@/lib/auth";
 import { plans } from "@/lib/saas";
 
@@ -61,7 +62,24 @@ export async function POST(request: Request) {
     );
   }
 
-  const answer = buildMentorAnswer(question, lesson, (payload.code ?? "").slice(0, 12_000));
+  const code = (payload.code ?? "").slice(0, 12_000);
+  let answer = buildMentorAnswer(question, lesson, code);
+  let source = "local-didactic";
+  let inputUnits = question.length + code.length;
+  let outputUnits = JSON.stringify(answer).length;
+  if (remoteMentorConfigured()) {
+    try {
+      const remote = await generateRemoteMentorAnswer({ question, lesson, code });
+      if (remote) {
+        answer = remote.answer;
+        source = "openai-responses";
+        inputUnits = remote.inputUnits;
+        outputUnits = remote.outputUnits;
+      }
+    } catch {
+      source = "local-fallback";
+    }
+  }
   const now = new Date();
   const serializedAnswer = JSON.stringify(answer);
   await db.transaction(async (transaction) => {
@@ -72,16 +90,16 @@ export async function POST(request: Request) {
         userId: auth.user.id,
         usageDate: today,
         requests: 1,
-        inputUnits: question.length,
-        outputUnits: serializedAnswer.length,
+        inputUnits,
+        outputUnits,
         updatedAt: now,
       })
       .onConflictDoUpdate({
         target: aiUsage.id,
         set: {
-          requests: (usage?.requests ?? 0) + 1,
-          inputUnits: (usage?.inputUnits ?? 0) + question.length,
-          outputUnits: (usage?.outputUnits ?? 0) + serializedAnswer.length,
+          requests: sql`${aiUsage.requests} + 1`,
+          inputUnits: sql`${aiUsage.inputUnits} + ${inputUnits}`,
+          outputUnits: sql`${aiUsage.outputUnits} + ${outputUnits}`,
           updatedAt: now,
         },
       });
@@ -92,7 +110,7 @@ export async function POST(request: Request) {
       intent: mentorIntent(question),
       promptExcerpt: question.slice(0, 320),
       responseExcerpt: serializedAnswer.slice(0, 640),
-      source: "local-didactic",
+      source,
       status: "completed",
       createdAt: now,
     });
@@ -100,9 +118,13 @@ export async function POST(request: Request) {
 
   return Response.json({
     answer,
-    engine: "local-didactic",
+    engine: source,
     disclosure:
-      "Resposta gerada pelo motor didático local do NexaCode; nenhuma API remota foi utilizada.",
+      source === "openai-responses"
+        ? "Resposta gerada pela IA remota configurada no NexaCode AI."
+        : source === "local-fallback"
+          ? "A IA remota ficou indisponível; o motor didático local respondeu como contingência."
+          : "Resposta gerada pelo motor didático local; nenhuma API remota foi utilizada.",
     remaining: Math.max(0, limit - (usage?.requests ?? 0) - 1),
   });
 }

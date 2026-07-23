@@ -164,20 +164,29 @@ test("organizações e administração verificam plano, papel e sessão", async 
 });
 
 test("preferências de IA, histórico e certificados funcionam no servidor", async () => {
-  const [profile, mentor, progress, certificate] = await Promise.all([
+  const [profile, mentor, remoteMentor, progress, certificate, notificationRoute] = await Promise.all([
     read("app/api/profile/route.ts"),
     read("app/api/ai/mentor/route.ts"),
+    read("lib/openai-mentor.ts"),
     read("app/api/progress/route.ts"),
     read("app/certificado/[code]/page.tsx"),
+    read("app/api/notifications/route.ts"),
   ]);
   assert.match(profile, /aiEnabled/);
   assert.match(profile, /themePreference/);
   assert.match(profile, /avatarPreset/);
   assert.match(mentor, /profile\?\.aiEnabled === false/);
   assert.match(mentor, /insert\(aiHistory\)/);
+  assert.match(mentor, /openai-responses/);
+  assert.match(mentor, /local-fallback/);
+  assert.match(remoteMentor, /api\.openai\.com\/v1\/responses/);
+  assert.match(remoteMentor, /store: false/);
+  assert.match(remoteMentor, /OPENAI_API_KEY/);
   assert.match(progress, /lessonsByLanguage/);
   assert.match(progress, /insert\(certificates\)/);
   assert.match(certificate, /CERTIFICADO AUTÊNTICO/);
+  assert.match(notificationRoute, /requireSessionUser/);
+  assert.match(notificationRoute, /isNull\(notifications\.readAt\)/);
 });
 
 test("landing, cadastro, preços, conta, equipe e admin são rotas reais", async () => {
@@ -204,18 +213,22 @@ test("landing, cadastro, preços, conta, equipe e admin são rotas reais", async
 });
 
 test("PWA não armazena páginas privadas e Next.js envia headers de segurança", async () => {
-  const [nextConfig, serviceWorker, manifest] = await Promise.all([
+  const [nextConfig, serviceWorker, manifest, proxy] = await Promise.all([
     read("next.config.ts"),
     read("public/sw.js"),
     read("public/manifest.webmanifest"),
+    read("proxy.ts"),
   ]);
-  assert.match(serviceWorker, /nexacode-ai-v4/);
+  assert.match(serviceWorker, /nexacode-ai-v5/);
   assert.match(serviceWorker, /url\.pathname\.startsWith\("\/api\/"\)/);
   assert.match(serviceWorker, /url\.pathname\.startsWith\("\/conta"\)/);
   assert.match(nextConfig, /X-Content-Type-Options/);
   assert.match(nextConfig, /Strict-Transport-Security/);
   assert.match(nextConfig, /Content-Security-Policy/);
   assert.match(nextConfig, /serverExternalPackages: \["postgres"\]/);
+  assert.match(proxy, /sec-fetch-site/);
+  assert.match(proxy, /EXTERNAL_WEBHOOKS/);
+  assert.match(proxy, /Origem da requisição não autorizada/);
   assert.equal(JSON.parse(manifest).start_url, "/app");
 });
 

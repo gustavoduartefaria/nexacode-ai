@@ -580,13 +580,22 @@ textarea:focus-visible {
   top: 48px;
   right: 0;
   display: flex;
-  width: 280px;
+  width: min(340px, calc(100vw - 24px));
   flex-direction: column;
   padding: 18px;
   border: 1px solid var(--border-strong);
   border-radius: 14px;
   background: rgba(14, 19, 28, 0.98);
   box-shadow: var(--shadow);
+}
+
+.notification-popover article {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.notification-popover article:last-of-type {
+  border-bottom: 0;
 }
 
 .notification-popover > span {
@@ -596,19 +605,25 @@ textarea:focus-visible {
   letter-spacing: 1.2px;
 }
 
-.notification-popover strong {
-  margin-top: 9px;
+.notification-popover article strong {
+  display: block;
   font-size: 14px;
 }
 
-.notification-popover p {
-  margin: 7px 0 14px;
+.notification-popover article p {
+  margin: 5px 0 3px;
   color: var(--muted);
   font-size: 11px;
   line-height: 1.55;
 }
 
+.notification-popover article small {
+  color: var(--muted-2);
+  font-size: 9px;
+}
+
 .notification-popover button {
+  margin-top: 10px;
   align-self: flex-start;
   padding: 7px 10px;
   border: 0;
@@ -2333,6 +2348,15 @@ main {
 
 .next-step strong {
   color: #a8beb6;
+}
+
+.mentor-disclosure {
+  display: block;
+  margin-top: 10px;
+  color: var(--muted-2);
+  font-family: var(--font-geist-mono);
+  font-size: 7px;
+  line-height: 1.5;
 }
 
 .quick-prompts {
