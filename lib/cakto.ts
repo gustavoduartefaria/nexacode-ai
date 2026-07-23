@@ -99,6 +99,12 @@ function planFromPayload(payload: JsonRecord) {
     "data.offer_id",
     "offer_id",
   ]);
+  const offerName = firstString(payload, [
+    "data.offer.name",
+    "offer.name",
+    "data.subscription.offer.name",
+    "subscription.offer.name",
+  ]);
   const productId = firstString(payload, [
     "data.product.id",
     "product.id",
@@ -107,14 +113,18 @@ function planFromPayload(payload: JsonRecord) {
     "data.product_id",
     "product_id",
   ]);
+  const productName = firstString(payload, ["data.product.name", "product.name"]);
   for (const planId of ["pro", "teams"] as const) {
     for (const cycle of ["monthly", "annual"] as const) {
       if (offerId && runtimeValue(offerKey(planId, cycle)) === offerId) {
-        return { planId, cycle, offerId, productId };
+        return { planId, cycle, offerId, offerName, productId, productName };
       }
     }
     if (productId && list(`CAKTO_${planId.toUpperCase()}_PRODUCT_IDS`).includes(productId)) {
-      return { planId, cycle: "monthly" as const, offerId, productId };
+      const cycle = /\b(anual|annual)\b/i.test(`${offerName} ${productName}`)
+        ? ("annual" as const)
+        : ("monthly" as const);
+      return { planId, cycle, offerId, offerName, productId, productName };
     }
   }
   return null;
@@ -201,6 +211,7 @@ export async function processCaktoEvent(payload: JsonRecord, rawPayload: string)
     customerId: customerId || null,
     subscriptionId: subscriptionId || null,
     offerId: selected?.offerId || null,
+    offerName: selected?.offerName || null,
     productId: selected?.productId || null,
   });
   const db = getDb();
