@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { studentProfiles, users } from "@/db/schema";
+import { notifications, studentProfiles, users } from "@/db/schema";
 import {
   createAccountToken,
   createSession,
@@ -94,6 +94,14 @@ export async function POST(request: Request) {
         acceptedTermsAt: now,
         createdAt: now,
         updatedAt: now,
+      });
+      await transaction.insert(notifications).values({
+        id: crypto.randomUUID(),
+        userId,
+        title: "Bem-vindo ao NexaCode AI",
+        message: "Comece pela primeira aula e conclua uma microprática para construir sua sequência.",
+        kind: "welcome",
+        createdAt: now,
       });
     });
 

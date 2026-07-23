@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { billingEvents, subscriptions, users } from "@/db/schema";
+import { billingEvents, notifications, subscriptions, users } from "@/db/schema";
 import type { SessionUser } from "@/lib/auth";
 import { runtimeValue } from "@/lib/runtime-env";
 import type { PlanId } from "@/lib/saas";
@@ -298,20 +298,47 @@ export async function processCaktoEvent(payload: JsonRecord, rawPayload: string)
         .update(users)
         .set({ planId: selected.planId, updatedAt: now })
         .where(eq(users.id, user.id));
+      if (!stored || stored.planId !== selected.planId || stored.status !== "active") {
+        await transaction.insert(notifications).values({
+          id: crypto.randomUUID(),
+          userId: user.id,
+          title: `Plano ${selected.planId === "teams" ? "Equipes" : "Pro"} ativado`,
+          message: "Seu pagamento foi confirmado e os novos recursos já estão disponíveis.",
+          kind: "billing",
+          createdAt: now,
+        });
+      }
     } else if (revokingEvents.has(eventType)) {
+      const now = new Date();
       await transaction
         .update(subscriptions)
-        .set({ status: eventType, updatedAt: new Date() })
+        .set({ status: eventType, updatedAt: now })
         .where(and(eq(subscriptions.provider, "cakto"), eq(subscriptions.userId, user.id)));
       await transaction
         .update(users)
-        .set({ planId: "free", updatedAt: new Date() })
+        .set({ planId: "free", updatedAt: now })
         .where(eq(users.id, user.id));
+      await transaction.insert(notifications).values({
+        id: crypto.randomUUID(),
+        userId: user.id,
+        title: "Assinatura atualizada",
+        message: "O acesso pago foi encerrado. Seu progresso continua salvo no plano Starter.",
+        kind: "billing",
+        createdAt: now,
+      });
     } else if (eventType === "subscription_renewal_refused") {
       await transaction
         .update(subscriptions)
         .set({ status: "past_due", updatedAt: new Date() })
         .where(and(eq(subscriptions.provider, "cakto"), eq(subscriptions.userId, user.id)));
+      await transaction.insert(notifications).values({
+        id: crypto.randomUUID(),
+        userId: user.id,
+        title: "Pagamento não aprovado",
+        message: "Atualize a forma de pagamento na Cakto para evitar a interrupção do plano.",
+        kind: "warning",
+        createdAt: new Date(),
+      });
     }
 
     await transaction

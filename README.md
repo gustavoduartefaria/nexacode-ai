@@ -1,7 +1,7 @@
 # NexaCode AI
 
 SaaS educacional para aprender JavaScript, Python e C++ com prática orientada,
-mentor contextual e progresso sincronizado. A versão 4.1 usa Next.js oficial em
+mentor contextual e progresso sincronizado. A versão 4.2 usa Next.js oficial em
 Node.js, PostgreSQL no Supabase, frontend na Vercel e backend no Railway.
 
 ## Produção
@@ -28,7 +28,7 @@ repositório.
 - Micromissão prática e checkpoint com feedback.
 - Code Lab JavaScript isolado em Web Worker.
 - Python e C++ com instruções honestas para execução externa segura.
-- Mentor contextual local, com limite por plano e histórico controlado.
+- Mentor contextual híbrido, com OpenAI opcional, fallback local, limite por plano e histórico controlado.
 
 ## Plataforma SaaS
 
@@ -40,6 +40,7 @@ repositório.
 - Resend preparado para confirmação, recuperação e convites.
 - Organizações, membros, papéis, convites e turmas.
 - Certificados verificáveis, painel administrativo, auditoria e LGPD.
+- Central de notificações persistentes para conta, certificados e cobrança.
 - Tema claro/escuro, PWA, acessibilidade e layout responsivo.
 
 ## Arquitetura
@@ -51,7 +52,9 @@ repositório.
 - Migrações SQL versionadas em `supabase/migrations`.
 - Row Level Security ativada para bloquear acesso anônimo pelo Data API.
 - Cakto/Stripe e Resend executados somente no backend.
+- OpenAI Responses API opcional, somente no backend e sem armazenar respostas remotamente.
 - Proxy `/api` da Vercel para o backend Railway por `BACKEND_URL`.
+- Proteção de origem para mutações de navegador, com exceções explícitas para webhooks assinados.
 
 O aplicativo não depende de Cloudflare Workers, D1, Vinext ou Wrangler.
 
@@ -119,12 +122,13 @@ npm audit --omit=dev
 - `SUPABASE_DIRECT_URL`: conexão direta usada pelas migrações.
 - `APP_ENV`, `APP_URL` e `ADMIN_EMAILS`.
 - `RESEND_API_KEY` e `EMAIL_FROM`.
+- `AI_PROVIDER=local|openai`, `OPENAI_API_KEY` e `OPENAI_MODEL`.
 - `BACKEND_URL`: backend Railway usado pelo frontend Vercel.
 - `BILLING_PROVIDER=cakto`, segredo, URLs de checkout e IDs de oferta da Cakto.
 - Variáveis Stripe somente se esse provedor alternativo for escolhido.
 
-Sem Cakto/Stripe ou Resend, o produto não simula sucesso: a interface informa que a
-integração aguarda configuração.
+Sem Cakto/Stripe, Resend ou OpenAI, o produto não simula integrações remotas: a interface
+informa a condição real e o mentor usa explicitamente o motor didático local.
 
 ## Rotas principais
 
