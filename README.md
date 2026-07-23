@@ -4,6 +4,21 @@ SaaS educacional para aprender JavaScript, Python e C++ com prática orientada,
 mentor contextual e progresso sincronizado. A versão 4.1 usa Next.js oficial em
 Node.js, PostgreSQL no Supabase, frontend na Vercel e backend no Railway.
 
+## Produção
+
+- Frontend: https://nexacode-ai.vercel.app
+- Backend e healthcheck: https://nexacode-ai-production.up.railway.app/api/health
+- Repositório: https://github.com/gustavoduartefaria/nexacode-ai
+- Cobrança: quatro checkouts recorrentes na Cakto, com ciclos mensal e anual para
+  Pro e Equipes.
+- Webhook: eventos de compra, assinatura, renovação, recusa, cancelamento,
+  reembolso e chargeback são enviados diretamente ao Railway.
+
+Para receber vendas reais, o proprietário da conta ainda precisa concluir a
+verificação financeira/KYC exibida no painel da Cakto. Essa etapa exige dados
+pessoais e bancários do titular e não deve ser automatizada ou armazenada no
+repositório.
+
 ## Conteúdo
 
 - 44 aulas: 24 de JavaScript, 10 de Python e 10 de C++.
