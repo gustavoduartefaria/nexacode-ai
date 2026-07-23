@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.3.3 — Trilha JavaScript em vídeo
+
+- Integra a playlist pública do Curso em Vídeo como referência complementar nas 24 aulas de JavaScript.
+- Relaciona cada aula a um tema específico da formação, diferenciando fundamentos e extensões avançadas do NexaCode.
+- Adiciona um card responsivo com atribuição, transparência editorial e acesso seguro à playlist.
+- Preserva conteúdo, exemplos, desafios, checkpoints e progresso originais da plataforma.
+
 ## 4.3.2 — Nex, o mascote da jornada
 
 - Mascote pixel-art Nex integrado com recorte transparente e arquivo otimizado.

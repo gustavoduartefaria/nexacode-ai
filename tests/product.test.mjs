@@ -23,6 +23,10 @@ test("mantém as 44 aulas de JavaScript, Python e C++", async () => {
   assert.match(app, /REVISÃO DE ENGENHARIA/);
   assert.match(data, /objectives:/);
   assert.match(data, /engineering:/);
+  assert.match(data, /PLHz_AreHm4dlsK3Nr9GVvXCbpQyHQl1o1/);
+  assert.match(data, /javascriptVideoCoverage/);
+  assert.match(app, /TRILHA EM VÍDEO · REFERÊNCIA EXTERNA/);
+  assert.match(app, /currentLesson\.videoReference/);
   assert.match(multi, /productionContext/);
   assert.match(multi, /failureMode/);
   assert.match(mentor, /buildMentorAnswer/);
@@ -249,7 +253,7 @@ test("PWA não armazena páginas privadas e Next.js envia headers de segurança"
     read("public/manifest.webmanifest"),
     read("proxy.ts"),
   ]);
-  assert.match(serviceWorker, /nexacode-ai-v8/);
+  assert.match(serviceWorker, /nexacode-ai-v9/);
   assert.match(serviceWorker, /url\.pathname\.startsWith\("\/api\/"\)/);
   assert.match(serviceWorker, /url\.pathname\.startsWith\("\/conta"\)/);
   assert.match(nextConfig, /X-Content-Type-Options/);

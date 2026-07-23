@@ -2816,6 +2816,83 @@ main {
   line-height: 1.55;
 }
 
+.lesson-video-reference {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 13px;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid rgba(255, 88, 88, 0.18);
+  border-radius: 11px;
+  background:
+    radial-gradient(circle at 0 50%, rgba(255, 68, 68, 0.1), transparent 34%),
+    rgba(255, 255, 255, 0.018);
+}
+
+.lesson-video-reference-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(255, 94, 94, 0.22);
+  border-radius: 12px;
+  background: rgba(255, 65, 65, 0.1);
+  color: #ff7979;
+}
+
+.lesson-video-reference span {
+  color: #ff8989;
+  font-family: var(--font-geist-mono);
+  font-size: 8px;
+  font-weight: 760;
+  letter-spacing: 1.05px;
+}
+
+.lesson-video-reference h3 {
+  margin: 5px 0 3px;
+  color: #e7ebf2;
+  font-size: 11px;
+}
+
+.lesson-video-reference p,
+.lesson-video-reference small {
+  display: block;
+  margin: 0;
+  color: #8f9baa;
+  font-size: 8.5px;
+  line-height: 1.55;
+}
+
+.lesson-video-reference small {
+  margin-top: 4px;
+  color: #697586;
+}
+
+.lesson-video-reference-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 103, 103, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 73, 73, 0.07);
+  color: #ff9595;
+  font-size: 8px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.lesson-video-reference-link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 126, 126, 0.4);
+  background: rgba(255, 73, 73, 0.12);
+}
+
 .lesson-objectives {
   display: grid;
   grid-template-columns: 1.35fr 0.65fr;
@@ -3863,6 +3940,15 @@ main {
   .lesson-objectives,
   .lesson-engineering > div {
     grid-template-columns: 1fr;
+  }
+
+  .lesson-video-reference {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .lesson-video-reference-link {
+    grid-column: 1 / -1;
+    justify-content: center;
   }
 
   .mission-block {

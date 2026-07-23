@@ -1,5 +1,13 @@
 # NexaCode AI
 
+## Trilha complementar em vídeo
+
+As 24 aulas de JavaScript incluem uma referência temática à playlist pública
+[Curso de JavaScript — Curso em Vídeo](https://www.youtube.com/playlist?list=PLHz_AreHm4dlsK3Nr9GVvXCbpQyHQl1o1),
+do professor Gustavo Guanabara. A playlist funciona como apoio audiovisual; teoria,
+exemplos, micromissões, revisão de engenharia e checkpoints permanecem conteúdos
+próprios do NexaCode AI.
+
 SaaS educacional para aprender JavaScript, Python e C++ com prática orientada,
 mentor contextual e progresso sincronizado. A versão 4.2 usa Next.js oficial em
 Node.js, PostgreSQL no Supabase, frontend na Vercel e backend no Railway.

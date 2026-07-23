@@ -1699,6 +1699,32 @@ export default function NexaCodeApp({
                   <p>{currentLesson.analogy}</p>
                 </div>
               </div>
+              {currentLesson.videoReference && (
+                <section className="lesson-video-reference">
+                  <div className="lesson-video-reference-icon" aria-hidden="true">
+                    <CirclePlay size={25} />
+                  </div>
+                  <div>
+                    <span>TRILHA EM VÍDEO · REFERÊNCIA EXTERNA</span>
+                    <h3>{currentLesson.videoReference.title}</h3>
+                    <p>{currentLesson.videoReference.coverage}</p>
+                    <small>
+                      {currentLesson.videoReference.creator}.{" "}
+                      {currentLesson.videoReference.note}
+                    </small>
+                  </div>
+                  <Link
+                    className="lesson-video-reference-link"
+                    href={currentLesson.videoReference.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`Abrir ${currentLesson.videoReference.title} no YouTube`}
+                  >
+                    Assistir à playlist
+                    <ChevronRight size={16} />
+                  </Link>
+                </section>
+              )}
               <section className="lesson-objectives">
                 <div>
                   <span>OBJETIVOS VERIFICÁVEIS</span>

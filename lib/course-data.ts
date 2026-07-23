@@ -12,8 +12,39 @@ export type {
   Difficulty,
   LanguageId,
   Lesson,
+  LessonVideoReference,
   ProgrammingLanguage,
 } from "./course-types";
+
+const cursoEmVideoPlaylist =
+  "https://www.youtube.com/playlist?list=PLHz_AreHm4dlsK3Nr9GVvXCbpQyHQl1o1";
+
+const javascriptVideoCoverage: Record<string, string> = {
+  variaveis: "Módulo B · variáveis, identificadores e atribuição de valores.",
+  tipos: "Módulo B · tipos primitivos, conversão e tratamento de dados.",
+  operadores: "Módulo B · operadores aritméticos, relacionais e lógicos.",
+  condicionais: "Módulo D · condições simples, compostas e aninhadas.",
+  loops: "Módulo E · repetições com while, do...while e for.",
+  erros: "Base consolidada da playlist, ampliada pelo NexaCode com validação e tratamento de falhas.",
+  "funcoes-base": "Módulo F · funções, parâmetros, retorno e decomposição de problemas.",
+  "arrow-functions": "Fundamentos de funções da playlist, estendidos para a sintaxe moderna de arrow functions.",
+  "escopo-closures": "Fundamentos de variáveis e funções, aprofundados com escopo léxico e closures.",
+  arrays: "Módulo F · variáveis compostas e operações fundamentais com arrays.",
+  "metodos-array": "Base de arrays da playlist, ampliada com map, filter e reduce.",
+  objetos: "Objetos apresentados na base de JavaScript, aprofundados com desestruturação e contratos.",
+  "dom-selecao": "Módulo C · introdução ao DOM e seleção de elementos da página.",
+  eventos: "Módulo C · eventos, interação e manipulação do DOM.",
+  formularios: "DOM e eventos aplicados a formulários com validação e estados de erro.",
+  promises: "Extensão NexaCode após a base da playlist: concorrência e estados assíncronos.",
+  "async-await": "Extensão NexaCode após a base da playlist: composição assíncrona com async/await.",
+  fetch: "Extensão NexaCode após a base da playlist: HTTP, APIs e tratamento de respostas.",
+  modulos: "Organização profissional do código após consolidar os fundamentos da playlist.",
+  classes: "Objetos e funções evoluídos para modelagem com classes e responsabilidades explícitas.",
+  imutabilidade: "Arrays e objetos aprofundados com atualização previsível de estado.",
+  "projeto-tarefas": "Aplicação prática dos módulos de DOM, eventos, condições, arrays e funções.",
+  "projeto-api": "Projeto avançado que acrescenta APIs e assincronismo à base da playlist.",
+  "projeto-final": "Síntese da formação: fundamentos da playlist e engenharia de produto do NexaCode.",
+};
 
 const lesson = (
   id: string,
@@ -63,6 +94,16 @@ const lesson = (
         difficulty === "Avançado"
           ? "Analise custo de tempo e memória, identifique alocações e evite trabalho repetido em loops ou renderizações. Meça antes de otimizar."
           : "Priorize correção e legibilidade; depois observe quantas vezes cada operação é executada e quais dados permanecem em memória.",
+    },
+    videoReference: {
+      title: "Curso de JavaScript",
+      creator: "Curso em Vídeo · Prof. Gustavo Guanabara",
+      url: cursoEmVideoPlaylist,
+      coverage:
+        javascriptVideoCoverage[id] ??
+        "Referência audiovisual para revisar os fundamentos relacionados a esta aula.",
+      note:
+        "Material externo complementar. A explicação, o código, a micromissão e o checkpoint desta aula são conteúdos próprios do NexaCode AI.",
     },
     quiz: { question, options, answer, explanation },
   };
