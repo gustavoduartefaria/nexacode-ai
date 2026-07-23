@@ -11,7 +11,70 @@ export type MentorAnswer = {
   message: string;
   example?: string;
   nextStep: string;
+  hintStage?: number;
+  intent?: "explanation" | "debug" | "exercise" | "review" | "study-plan" | "summary";
+  detectedIssue?: string | null;
+  shouldRunTests?: boolean;
+  confidence?: "low" | "medium" | "high";
 };
+
+export type MentorTestResult = {
+  id: string;
+  label: string;
+  passed: boolean;
+  expected?: string;
+  received?: string;
+  message: string;
+};
+
+export function applyGraduatedHint(
+  answer: MentorAnswer,
+  lesson: Lesson & { language?: LanguageId },
+  stage: number,
+  tests: MentorTestResult[] = [],
+): MentorAnswer {
+  const hintStage = Math.min(4, Math.max(1, stage));
+  const failure = tests.find((test) => !test.passed);
+  const common = {
+    ...answer,
+    hintStage,
+    detectedIssue: failure?.message ?? answer.detectedIssue ?? null,
+    shouldRunTests: true,
+    confidence: failure ? ("high" as const) : ("medium" as const),
+  };
+  if (hintStage === 1) {
+    return {
+      ...common,
+      headline: "Nex encontrou onde investigar",
+      message: failure
+        ? `O primeiro ponto a revisar está em “${failure.label}”. O teste esperava ${failure.expected ?? "outro comportamento"} e recebeu ${failure.received ?? "um resultado diferente"}. Relacione essa diferença ao conceito ${lesson.title}.`
+        : `Comece pela parte do código que aplica ${lesson.title}. Confira as entradas dessa regra antes de alterar várias linhas ao mesmo tempo.`,
+      example: undefined,
+      nextStep: "Mostre no console os valores imediatamente antes dessa regra e execute novamente.",
+    };
+  }
+  if (hintStage === 2) {
+    return {
+      ...common,
+      headline: "Uma pergunta para destravar",
+      message: failure
+        ? `Antes de mudar o código: qual valor deveria chegar ao teste “${failure.label}” e em qual linha ele deixa de ter esse valor?`
+        : "Qual valor você espera antes da condição principal e qual valor aparece de verdade?",
+      example: undefined,
+      nextStep: "Responda com o valor esperado, o valor recebido e a linha em que eles divergem.",
+    };
+  }
+  if (hintStage === 3) {
+    return {
+      ...common,
+      headline: "Observe um problema análogo",
+      message: `Imagine uma catraca que libera a passagem apenas quando duas regras são verdadeiras. Primeiro registre cada regra separadamente; depois combine-as. A mesma estratégia ajuda em ${lesson.title}: torne cada decisão observável antes de compor o resultado.`,
+      example: `const temCredencial = true;\nconst horarioValido = false;\nconsole.log({ temCredencial, horarioValido });`,
+      nextStep: "Crie variáveis intermediárias equivalentes no seu exercício e compare cada uma no console.",
+    };
+  }
+  return { ...common, hintStage: 4, shouldRunTests: true };
+}
 
 export function inspectCode(code: string): CodeInsight[] {
   const insights: CodeInsight[] = [];

@@ -1,6 +1,6 @@
 {
   "name": "nexacode-ai",
-  "version": "4.5.0",
+  "version": "5.0.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -9,6 +9,7 @@
     "dev": "next dev --turbopack -p 3147",
     "build": "next build",
     "start": "next start",
+    "start:railway": "node scripts/migrate-production.mjs && next start",
     "start:local": "next start -p 3147",
     "vercel-build": "next build",
     "test": "node --test tests/*.test.mjs",

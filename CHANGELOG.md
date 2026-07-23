@@ -1,5 +1,14 @@
 # Changelog
 
+## 5.0.0 — Nex Mentor com IA real
+
+- Transforma o mascote Nex na identidade visual e pedagógica do mentor.
+- Adiciona contexto estruturado, quatro pistas persistentes e histórico recente de erros.
+- Implementa Structured Outputs, roteamento Luna/Terra/Sol e cache seguro de dúvidas genéricas.
+- Mantém o mentor local ativo em falhas ou quando o limite remoto termina.
+- Adiciona três testes objetivos no laboratório antes da mentoria.
+- Cria tabelas protegidas por RLS e migração automática no Railway.
+
 ## 4.5.0 — Curso escrito completo
 
 - Gera 24 aulas extensas em Markdown organizadas em 8 módulos pedagógicos.

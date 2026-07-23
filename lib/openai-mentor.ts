@@ -1,6 +1,8 @@
 import type { LanguageId, Lesson } from "@/lib/course-data";
-import type { MentorAnswer } from "@/lib/mentor";
+import type { MentorAnswer, MentorTestResult } from "@/lib/mentor";
+import { mentorAnswerSchema, NEX_MENTOR_SYSTEM_PROMPT } from "@/lib/mentor-system-prompt";
 import { runtimeValue } from "@/lib/runtime-env";
+import type { PlanId } from "@/lib/saas";
 
 type ResponsesPayload = {
   output?: Array<{
@@ -11,6 +13,19 @@ type ResponsesPayload = {
     input_tokens?: number;
     output_tokens?: number;
   };
+};
+
+export type RemoteMentorContext = {
+  intent: string;
+  planId: PlanId;
+  hintStage: number;
+  exerciseId?: string;
+  exerciseGoal?: string;
+  failedAttempts: number;
+  recentErrors: string[];
+  recentMessages: Array<{ role: "student" | "mentor"; text: string }>;
+  testResults: MentorTestResult[];
+  solutionExplicitlyRequested: boolean;
 };
 
 export function remoteMentorConfigured() {
@@ -28,10 +43,7 @@ function extractText(payload: ResponsesPayload) {
 }
 
 function parseMentorAnswer(raw: string): MentorAnswer {
-  const jsonText = raw
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/\s*```$/, "")
-    .trim();
+  const jsonText = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
   const value = JSON.parse(jsonText) as Partial<MentorAnswer>;
   if (
     typeof value.headline !== "string" ||
@@ -45,17 +57,47 @@ function parseMentorAnswer(raw: string): MentorAnswer {
     message: value.message.trim().slice(0, 2400),
     example: typeof value.example === "string" ? value.example.trim().slice(0, 4000) : undefined,
     nextStep: value.nextStep.trim().slice(0, 600),
+    hintStage:
+      typeof value.hintStage === "number" ? Math.min(4, Math.max(1, value.hintStage)) : 1,
+    intent: value.intent,
+    detectedIssue:
+      typeof value.detectedIssue === "string" ? value.detectedIssue.trim().slice(0, 400) : null,
+    shouldRunTests: value.shouldRunTests !== false,
+    confidence:
+      value.confidence === "low" || value.confidence === "high" ? value.confidence : "medium",
   };
+}
+
+export function selectMentorModel(context: RemoteMentorContext) {
+  const simple =
+    runtimeValue("OPENAI_MODEL_SIMPLE") ||
+    runtimeValue("OPENAI_MODEL") ||
+    "gpt-5.6-luna";
+  const advanced = runtimeValue("OPENAI_MODEL_ADVANCED") || "gpt-5.6-terra";
+  const review = runtimeValue("OPENAI_MODEL_REVIEW") || "gpt-5.6-sol";
+  if (context.planId === "free") return { model: simple, effort: "low", route: "simple" };
+  if (
+    context.hintStage >= 4 &&
+    (context.intent === "review" || context.intent === "debug")
+  ) {
+    return { model: review, effort: "medium", route: "review" };
+  }
+  if (context.intent === "debug" || context.intent === "review") {
+    return { model: advanced, effort: "low", route: "advanced" };
+  }
+  return { model: simple, effort: "low", route: "simple" };
 }
 
 export async function generateRemoteMentorAnswer(options: {
   question: string;
   code: string;
   lesson: Lesson & { language?: LanguageId };
+  context: RemoteMentorContext;
 }) {
   if (!remoteMentorConfigured()) return null;
 
-  const { question, code, lesson } = options;
+  const { question, code, lesson, context } = options;
+  const selection = selectMentorModel(context);
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: {
@@ -63,28 +105,50 @@ export async function generateRemoteMentorAnswer(options: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: runtimeValue("OPENAI_MODEL") || "gpt-5.6-luna",
+      model: selection.model,
       store: false,
-      reasoning: { effort: "low" },
-      text: { verbosity: "low" },
-      max_output_tokens: 900,
-      instructions:
-        "Você é NEX, mentor de programação do NexaCode AI. Responda em português do Brasil, ensine o raciocínio sem entregar soluções inteiras quando uma pista bastar e nunca invente execução de código. Retorne somente JSON válido com headline, message, example opcional e nextStep.",
-      input: [
-        `Linguagem: ${lesson.language}`,
-        `Aula: ${lesson.title}`,
-        `Resumo: ${lesson.summary}`,
-        `Objetivos: ${lesson.objectives.join("; ")}`,
-        `Pergunta do aluno: ${question}`,
-        code.trim() ? `Código enviado:\n${code}` : "Código enviado: nenhum",
-      ].join("\n\n"),
+      reasoning: { effort: selection.effort },
+      text: {
+        verbosity: "low",
+        format: {
+          type: "json_schema",
+          name: "nex_mentor_answer",
+          strict: true,
+          schema: mentorAnswerSchema,
+        },
+      },
+      max_output_tokens: selection.route === "review" ? 1200 : 800,
+      instructions: NEX_MENTOR_SYSTEM_PROMPT,
+      input: JSON.stringify({
+        student: { plan: context.planId },
+        lesson: {
+          id: lesson.id,
+          language: lesson.language,
+          title: lesson.title,
+          concept: lesson.summary,
+          theory: lesson.theory,
+          objectives: lesson.objectives,
+          exerciseGoal: context.exerciseGoal ?? lesson.mission,
+        },
+        attempt: {
+          code: code || null,
+          question,
+          exerciseId: context.exerciseId ?? null,
+          testResults: context.testResults,
+          hintStage: context.hintStage,
+          failedAttempts: context.failedAttempts,
+          recentErrors: context.recentErrors,
+        },
+        conversation: {
+          recentMessages: context.recentMessages,
+          solutionExplicitlyRequested: context.solutionExplicitlyRequested,
+        },
+      }),
     }),
     signal: AbortSignal.timeout(18_000),
   });
 
-  if (!response.ok) {
-    throw new Error(`OpenAI respondeu com status ${response.status}.`);
-  }
+  if (!response.ok) throw new Error(`OpenAI respondeu com status ${response.status}.`);
   const payload = (await response.json()) as ResponsesPayload;
   const raw = extractText(payload);
   if (!raw) throw new Error("OpenAI não retornou texto utilizável.");
@@ -92,5 +156,7 @@ export async function generateRemoteMentorAnswer(options: {
     answer: parseMentorAnswer(raw),
     inputUnits: payload.usage?.input_tokens ?? question.length + code.length,
     outputUnits: payload.usage?.output_tokens ?? raw.length,
+    model: selection.model,
+    route: selection.route,
   };
 }

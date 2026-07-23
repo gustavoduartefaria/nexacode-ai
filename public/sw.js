@@ -1,4 +1,4 @@
-const CACHE_NAME = "nexacode-ai-v11";
+const CACHE_NAME = "nexacode-ai-v12";
 const CORE_ASSETS = [
   "/",
   "/manifest.webmanifest",

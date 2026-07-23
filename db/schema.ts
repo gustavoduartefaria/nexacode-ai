@@ -216,6 +216,47 @@ export const aiUsage = pgTable(
   ],
 );
 
+export const mentorAttempts = pgTable(
+  "mentor_attempts",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    lessonId: text("lesson_id").notNull(),
+    exerciseId: text("exercise_id").notNull().default("lesson"),
+    errorFingerprint: text("error_fingerprint").notNull(),
+    hintStage: integer("hint_stage").notNull().default(1),
+    failedAttempts: integer("failed_attempts").notNull().default(0),
+    lastError: text("last_error"),
+    lastCodeHash: text("last_code_hash"),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).notNull(),
+  },
+  (table) => [
+    uniqueIndex("mentor_attempts_context_unique").on(
+      table.userId,
+      table.lessonId,
+      table.exerciseId,
+      table.errorFingerprint,
+    ),
+    index("mentor_attempts_user_updated_idx").on(table.userId, table.updatedAt),
+  ],
+);
+
+export const aiResponseCache = pgTable(
+  "ai_response_cache",
+  {
+    cacheKey: text("cache_key").primaryKey(),
+    lessonId: text("lesson_id").notNull(),
+    intent: text("intent").notNull(),
+    responseJson: text("response_json").notNull(),
+    hits: integer("hits").notNull().default(0),
+    expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).notNull(),
+  },
+  (table) => [index("ai_response_cache_expires_idx").on(table.expiresAt)],
+);
+
 export const certificates = pgTable(
   "certificates",
   {

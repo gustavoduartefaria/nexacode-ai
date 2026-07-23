@@ -165,14 +165,14 @@ export default async function Home() {
           <span className="marketing-kicker"><Bot size={14} /> CONHEÇA O NEX</span>
           <h2>Um parceiro de código que comemora cada avanço.</h2>
           <p>
-            O Nex aparece nos momentos certos com mensagens, atalhos e motivação.
-            Quando a dúvida for técnica, ele te direciona para a aula, o laboratório
-            e o mentor contextual da plataforma.
+            O Nex é o mascote e mentor contextual da plataforma. Ele combina testes
+            objetivos, pistas graduais e um modelo de linguagem quando a IA remota
+            está disponível, sem deixar de funcionar no modo local.
           </p>
           <div className="mascot-points">
             <span><Sparkles size={16} /> Incentivo sem pressão</span>
             <span><Code2 size={16} /> Próximo passo mais claro</span>
-            <span><ShieldCheck size={16} /> Sem fingir uma IA remota</span>
+            <span><ShieldCheck size={16} /> Origem de cada resposta identificada</span>
           </div>
           <Link
             className="marketing-secondary"
@@ -294,7 +294,7 @@ export default async function Home() {
         <div className="faq-grid">
           <details data-reveal="up"><summary>Preciso saber programar?</summary><p>Não. A trilha começa pelos fundamentos e aumenta a dificuldade progressivamente.</p></details>
           <details data-reveal="up" style={{ "--reveal-delay": "50ms" } as React.CSSProperties}><summary>O plano gratuito pede cartão?</summary><p>Não. Você pode criar a conta Starter e começar sem cartão.</p></details>
-          <details data-reveal="up" style={{ "--reveal-delay": "100ms" } as React.CSSProperties}><summary>O mentor é uma IA remota?</summary><p>O produto identifica a origem da resposta. Sem integração remota configurada, usa o motor didático local.</p></details>
+          <details data-reveal="up" style={{ "--reveal-delay": "100ms" } as React.CSSProperties}><summary>O Nex sempre utiliza uma IA remota?</summary><p>Não. Quando disponível e permitido pelo plano, o Nex usa um modelo de linguagem com o código e o contexto necessários da aula. Se a API falhar ou o limite remoto for atingido, ele continua ajudando no modo local. A interface identifica qual modo respondeu.</p></details>
           <details data-reveal="up" style={{ "--reveal-delay": "150ms" } as React.CSSProperties}><summary>Como o acesso pago é liberado?</summary><p>Após a aprovação na Cakto, o webhook autenticado atualiza o plano da conta.</p></details>
           <details data-reveal="up" style={{ "--reveal-delay": "200ms" } as React.CSSProperties}><summary>Funciona no celular?</summary><p>Sim. A interface é responsiva e também pode ser instalada como aplicativo PWA.</p></details>
           <details data-reveal="up" style={{ "--reveal-delay": "250ms" } as React.CSSProperties}><summary>Posso cancelar?</summary><p>O gerenciamento ocorre pelo portal do provedor de cobrança configurado para a conta.</p></details>

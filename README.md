@@ -14,6 +14,17 @@ cronograma, glossário, banco de exercícios, projeto final, checklist de compet
 simulado de 100 questões e gabarito. Execute `npm run course:generate` para regenerar
 os materiais a partir do conteúdo original da plataforma.
 
+## Mentor Nex com IA real
+
+O mascote Nex também é o mentor contextual. O servidor envia ao modelo apenas o código,
+a aula, o objetivo do exercício, os testes e o histórico recente necessário. As pistas
+avançam em quatro estágios persistentes. Dúvidas simples usam o modelo econômico; depuração
+e revisão podem usar modelos mais fortes conforme o plano. Se a API falhar ou o limite
+remoto acabar, o modo local continua funcionando e a interface identifica a origem.
+
+O Railway executa as migrações do Supabase antes de iniciar. Configure `AI_PROVIDER=openai`
+e `OPENAI_API_KEY` somente nos ambientes protegidos do Vercel/Railway.
+
 SaaS educacional para aprender JavaScript, Python e C++ com prática orientada,
 mentor contextual e progresso sincronizado. A versão 4.2 usa Next.js oficial em
 Node.js, PostgreSQL no Supabase, frontend na Vercel e backend no Railway.

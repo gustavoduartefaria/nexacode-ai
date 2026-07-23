@@ -34,6 +34,7 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NexaMark } from "@/app/nexa-brand";
 import ThemeToggle from "@/app/theme-toggle";
@@ -52,6 +53,7 @@ import {
   calculateLearningScore,
   inspectCode,
   type MentorAnswer,
+  type MentorTestResult,
 } from "@/lib/mentor";
 import { accessibleLessonIds, type PlanId } from "@/lib/saas";
 
@@ -262,8 +264,10 @@ export default function NexaCodeApp({
   const [challengeResult, setChallengeResult] = useState<
     "idle" | "passed" | "failed"
   >("idle");
+  const [labTestResults, setLabTestResults] = useState<MentorTestResult[]>([]);
   const [showHint, setShowHint] = useState(false);
   const [mentorInput, setMentorInput] = useState("");
+  const [mentorEngine, setMentorEngine] = useState("local-didactic");
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "welcome",
@@ -485,6 +489,7 @@ export default function NexaCodeApp({
     setCode(selected.starter);
     setConsoleLines(["Novo desafio carregado. Leia a missão antes de programar."]);
     setChallengeResult("idle");
+    setLabTestResults([]);
     setShowHint(false);
   };
 
@@ -537,6 +542,39 @@ export default function NexaCodeApp({
         .map((line) => line.replace(/^[›⚠✕]\s*/, ""))
         .join("\n");
       const passed = currentChallenge.validate(validationOutput, code);
+      const executionPassed = !finalLines.some(
+        (line) => line.startsWith("✕") || line.startsWith("⏱"),
+      );
+      setLabTestResults([
+        {
+          id: "execution",
+          label: "Executa sem erro ou timeout",
+          passed: executionPassed,
+          message: executionPassed
+            ? "O código terminou dentro do limite."
+            : "A execução encontrou um erro ou ultrapassou três segundos.",
+        },
+        {
+          id: "expected-output",
+          label: "Produz a saída esperada",
+          passed,
+          expected: currentChallenge.expected,
+          received: validationOutput.slice(0, 300),
+          message: passed
+            ? "A saída corresponde ao contrato do desafio."
+            : "A saída ainda não corresponde ao resultado esperado.",
+        },
+        {
+          id: "observable-result",
+          label: "Torna o resultado observável",
+          passed: finalLines.length > 0,
+          expected: "Ao menos uma saída verificável",
+          received: finalLines.length ? finalLines[0].slice(0, 300) : "nenhuma saída",
+          message: finalLines.length
+            ? "Existe uma saída que pode ser comparada."
+            : "Mostre o resultado no console para verificar a hipótese.",
+        },
+      ]);
       setChallengeResult(passed ? "passed" : "failed");
       setRunning(false);
       if (passed && !progress.completedChallenges.includes(currentChallenge.id)) {
@@ -587,7 +625,10 @@ export default function NexaCodeApp({
         body: JSON.stringify({
           question: cleanQuestion,
           lessonId: currentLesson.id,
+          exerciseId: currentChallenge.id,
+          exerciseGoal: currentChallenge.description,
           code,
+          testResults: labTestResults,
         }),
       });
       const result = (await response.json()) as {
@@ -619,12 +660,14 @@ export default function NexaCodeApp({
           disclosure: result.disclosure,
         },
       ]);
+      setMentorEngine(result.engine ?? "local-didactic");
     } catch (error) {
       const answer = buildMentorAnswer(cleanQuestion, currentLesson, code);
       setMessages((current) => [
         ...current,
         { id: `mentor-${stamp}`, role: "mentor", text: answer.message, answer },
       ]);
+      setMentorEngine("local-fallback");
       setToast(
         error instanceof Error
           ? `${error.message} Usei o mentor local como alternativa.`
@@ -844,7 +887,13 @@ export default function NexaCodeApp({
 
         <article className="mentor-card">
           <div className="mentor-avatar">
-            <BrainCircuit size={30} />
+            <Image
+              className="mentor-mascot"
+              src="/mascot/nexa-mascot.webp"
+              alt="Nex, mascote mentor do NexaCode AI"
+              width={54}
+              height={54}
+            />
             <i />
           </div>
           <span className="section-kicker">NEX · MENTOR INTELIGENTE</span>
@@ -1133,6 +1182,28 @@ export default function NexaCodeApp({
                 </div>
               </div>
             )}
+            {labTestResults.length > 0 && (
+              <section className="lab-test-results" aria-label="Resultados dos testes">
+                <div>
+                  <span>TESTES AUTOMÁTICOS</span>
+                  <strong>
+                    {labTestResults.filter((test) => test.passed).length}/
+                    {labTestResults.length} aprovados
+                  </strong>
+                </div>
+                <ul>
+                  {labTestResults.map((test) => (
+                    <li className={test.passed ? "test-passed" : "test-failed"} key={test.id}>
+                      {test.passed ? <Check size={14} /> : <X size={14} />}
+                      <span>
+                        <strong>{test.label}</strong>
+                        <small>{test.message}</small>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
           </section>
 
           <aside className="insights-panel">
@@ -1176,7 +1247,13 @@ export default function NexaCodeApp({
       <section className="mentor-sidebar">
         <div className="mentor-identity">
           <div className="mentor-avatar large">
-            <BrainCircuit size={36} />
+            <Image
+              className="mentor-mascot"
+              src="/mascot/nexa-mascot.webp"
+              alt="Nex, seu mentor de programação"
+              width={70}
+              height={70}
+            />
             <i />
           </div>
           <span className="online-label">
@@ -1194,8 +1271,14 @@ export default function NexaCodeApp({
         <div className="privacy-note">
           <LockKeyhole size={18} />
           <div>
-            <strong>Motor didático transparente</strong>
-            <span>Sem API remota: o processamento usa regras locais do NexaCode.</span>
+            <strong>
+              {mentorEngine === "openai-responses" ? "Nex com IA" : "Nex em modo local"}
+            </strong>
+            <span>
+              {mentorEngine === "openai-responses"
+                ? "Um modelo de linguagem recebeu apenas o contexto necessário desta aula."
+                : "O motor didático local mantém as pistas disponíveis sem depender da API."}
+            </span>
           </div>
         </div>
       </section>
@@ -1207,7 +1290,8 @@ export default function NexaCodeApp({
             <h1>Como posso destravar seu aprendizado?</h1>
           </div>
           <span className="local-chip">
-            <ShieldCheck size={14} /> NEX Tutor · uso controlado
+            <ShieldCheck size={14} />{" "}
+            {mentorEngine === "openai-responses" ? "NEX COM IA" : "NEX MODO LOCAL"}
           </span>
         </div>
         <div className="chat-messages" aria-live="polite">
@@ -1221,7 +1305,13 @@ export default function NexaCodeApp({
             >
               <div className="message-avatar">
                 {message.role === "mentor" ? (
-                  <BrainCircuit size={19} />
+                  <Image
+                    className="message-mascot"
+                    src="/mascot/nexa-mascot.webp"
+                    alt=""
+                    width={32}
+                    height={32}
+                  />
                 ) : (
                   <UserRound size={18} />
                 )}

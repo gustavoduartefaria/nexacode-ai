@@ -44,6 +44,9 @@ test("mantém as 44 aulas de JavaScript, Python e C++", async () => {
   assert.match(app, /accessibleLessonIds/);
   assert.match(app, /\/api\/progress/);
   assert.match(app, /\/api\/ai\/mentor/);
+  assert.match(app, /labTestResults/);
+  assert.match(app, /\/mascot\/nexa-mascot\.webp/);
+  assert.match(app, /NEX COM IA/);
   assert.match(app, /OBJETIVOS VERIFICÁVEIS/);
   assert.match(app, /REVISÃO DE ENGENHARIA/);
   assert.match(data, /objectives:/);
@@ -67,6 +70,37 @@ test("mantém as 44 aulas de JavaScript, Python e C++", async () => {
   assert.match(multi, /productionContext/);
   assert.match(multi, /failureMode/);
   assert.match(mentor, /buildMentorAnswer/);
+});
+
+test("mentor Nex usa contexto, pistas graduais, roteamento, cache e fallback local", async () => {
+  const [route, remote, prompt, mentor, schema, migration, railway, migrateScript] =
+    await Promise.all([
+      read("app/api/ai/mentor/route.ts"),
+      read("lib/openai-mentor.ts"),
+      read("lib/mentor-system-prompt.ts"),
+      read("lib/mentor.ts"),
+      read("db/schema.ts"),
+      read("supabase/migrations/0001_spicy_proteus.sql"),
+      read("railway.toml"),
+      read("scripts/migrate-production.mjs"),
+    ]);
+  assert.match(schema, /mentorAttempts/);
+  assert.match(schema, /aiResponseCache/);
+  assert.match(route, /recentMessages/);
+  assert.match(route, /local-limit/);
+  assert.match(route, /local-fallback/);
+  assert.match(remote, /gpt-5\.6-luna/);
+  assert.match(remote, /gpt-5\.6-terra/);
+  assert.match(remote, /gpt-5\.6-sol/);
+  assert.match(remote, /json_schema/);
+  assert.match(prompt, /Você é NEX/);
+  assert.match(prompt, /Respeite hintStage/);
+  assert.match(mentor, /applyGraduatedHint/);
+  assert.match(migration, /CREATE TABLE "mentor_attempts"/);
+  assert.match(migration, /CREATE TABLE "ai_response_cache"/);
+  assert.match(migration, /ENABLE ROW LEVEL SECURITY/);
+  assert.match(railway, /start:railway/);
+  assert.match(migrateScript, /migrate\(drizzle\(client\)/);
 });
 
 test("autenticação própria protege senhas, sessões e tentativas", async () => {
@@ -290,7 +324,7 @@ test("PWA não armazena páginas privadas e Next.js envia headers de segurança"
     read("public/manifest.webmanifest"),
     read("proxy.ts"),
   ]);
-  assert.match(serviceWorker, /nexacode-ai-v11/);
+  assert.match(serviceWorker, /nexacode-ai-v12/);
   assert.match(serviceWorker, /url\.pathname\.startsWith\("\/api\/"\)/);
   assert.match(serviceWorker, /url\.pathname\.startsWith\("\/conta"\)/);
   assert.match(nextConfig, /X-Content-Type-Options/);
