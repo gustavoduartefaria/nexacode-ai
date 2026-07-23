@@ -47,9 +47,13 @@ const copy = {
 export default function AuthForm({
   mode,
   token = "",
+  desiredPlan,
+  desiredCycle = "annual",
 }: {
   mode: Mode;
   token?: string;
+  desiredPlan?: "pro" | "teams";
+  desiredCycle?: "monthly" | "annual";
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -122,7 +126,10 @@ export default function AuthForm({
           "O e-mail transacional ainda não está configurado. A conta funciona, mas a confirmação ficará pendente.",
         );
       }
-      window.location.href = result.redirectTo ?? "/app";
+      window.location.href =
+        mode === "register" && desiredPlan
+          ? `/precos?cycle=${desiredCycle}&intent=${desiredPlan}`
+          : result.redirectTo ?? "/app";
     } catch (currentError) {
       setError(
         currentError instanceof Error ? currentError.message : "Não foi possível concluir.",

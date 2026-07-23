@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { HelpCircle, ShieldCheck, Sparkles } from "lucide-react";
 import { MarketingHeader } from "@/app/marketing-header";
+import MarketingTracker from "@/app/marketing-tracker";
 import { PricingGrid } from "@/app/pricing-grid";
 import { getSessionUser } from "@/lib/auth";
 
@@ -13,12 +14,15 @@ export const metadata: Metadata = {
 export default async function PricingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ cycle?: string }>;
+  searchParams: Promise<{ cycle?: string; intent?: string }>;
 }) {
   const user = await getSessionUser();
-  const cycle = (await searchParams).cycle === "monthly" ? "monthly" : "annual";
+  const params = await searchParams;
+  const cycle = params.cycle === "monthly" ? "monthly" : "annual";
+  const intent = params.intent === "pro" || params.intent === "teams" ? params.intent : undefined;
   return (
     <main className="marketing-page pricing-page">
+      <MarketingTracker />
       <div className="marketing-grid" aria-hidden="true" />
       <MarketingHeader authenticated={Boolean(user)} />
       <section className="pricing-hero">
@@ -31,7 +35,12 @@ export default async function PricingPage({
           <span><strong>0</strong> taxas escondidas</span>
         </div>
       </section>
-      <PricingGrid authenticated={Boolean(user)} cycle={cycle} />
+      {intent && user && (
+        <div className="pricing-intent-banner">
+          Conta criada. Revise o plano {intent === "pro" ? "Pro" : "Equipes"} e continue para o checkout seguro.
+        </div>
+      )}
+      <PricingGrid authenticated={Boolean(user)} cycle={cycle} intent={intent} />
       <section className="pricing-trust">
         <span><ShieldCheck size={19} /><strong>Checkout seguro</strong><small>Pagamento processado pela Cakto</small></span>
         <span><HelpCircle size={19} /><strong>Acesso automático</strong><small>O webhook libera seu plano após a aprovação</small></span>

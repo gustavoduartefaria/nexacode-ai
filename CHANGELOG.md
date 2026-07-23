@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.3.0 — Funil comercial e aquisição
+
+- Rastreamento próprio de UTMs, visualizações e cliques sem coletar dados pessoais.
+- Continuidade do plano escolhido entre preços, cadastro e checkout.
+- Página comercial dedicada a escolas e empresas.
+- Métricas de aquisição dos últimos 30 dias no painel administrativo.
+- Seções de público, resultados esperados e dúvidas frequentes na landing page.
+- Playbook com calendário de conteúdo, roteiro de vídeos, prospecção B2B e métricas.
+
 ## 4.2.0 — Mentor híbrido, segurança e notificações
 
 - Mentor híbrido com OpenAI Responses API opcional e fallback local identificado.

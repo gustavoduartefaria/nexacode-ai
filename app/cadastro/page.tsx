@@ -10,7 +10,18 @@ export const metadata: Metadata = {
   description: "Crie gratuitamente seu workspace no NexaCode AI.",
 };
 
-export default async function CadastroPage() {
+export default async function CadastroPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ plan?: string; cycle?: string }>;
+}) {
   if (await getSessionUser()) redirect("/app");
-  return <AuthShell><AuthForm mode="register" /></AuthShell>;
+  const params = await searchParams;
+  const desiredPlan = params.plan === "pro" || params.plan === "teams" ? params.plan : undefined;
+  const desiredCycle = params.cycle === "monthly" ? "monthly" : "annual";
+  return (
+    <AuthShell>
+      <AuthForm mode="register" desiredPlan={desiredPlan} desiredCycle={desiredCycle} />
+    </AuthShell>
+  );
 }

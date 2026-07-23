@@ -21,6 +21,7 @@ export function MarketingHeader({ authenticated = false, compact = false }: Prop
       <nav aria-label="Navegação pública">
         <Link href="/#metodo">Método</Link>
         <Link href="/#trilhas">Trilhas</Link>
+        <Link href="/para-equipes">Equipes</Link>
         <Link href="/precos">Planos</Link>
       </nav>
       <div className="marketing-actions">
