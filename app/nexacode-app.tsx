@@ -1699,30 +1699,41 @@ export default function NexaCodeApp({
                   <p>{currentLesson.analogy}</p>
                 </div>
               </div>
-              {currentLesson.videoReference && (
-                <section className="lesson-video-reference">
-                  <div className="lesson-video-reference-icon" aria-hidden="true">
-                    <CirclePlay size={25} />
+              {currentLesson.studyGuide && (
+                <section className="lesson-written-guide">
+                  <div className="lesson-written-guide-heading">
+                    <div className="lesson-written-guide-icon" aria-hidden="true">
+                      <BookOpen size={24} />
+                    </div>
+                    <div>
+                      <span>LEITURA GUIADA · CONTEÚDO NEXACODE</span>
+                      <h3>{currentLesson.studyGuide.title}</h3>
+                    </div>
                   </div>
-                  <div>
-                    <span>TRILHA EM VÍDEO · REFERÊNCIA EXTERNA</span>
-                    <h3>{currentLesson.videoReference.title}</h3>
-                    <p>{currentLesson.videoReference.coverage}</p>
-                    <small>
-                      {currentLesson.videoReference.creator}.{" "}
-                      {currentLesson.videoReference.note}
-                    </small>
+                  <p className="lesson-written-guide-overview">
+                    {currentLesson.studyGuide.overview}
+                  </p>
+                  <div className="lesson-written-guide-grid">
+                    <div>
+                      <strong>PONTOS-CHAVE</strong>
+                      <ul>
+                        {currentLesson.studyGuide.keyPoints.map((point) => (
+                          <li key={point}>{point}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <aside>
+                      <strong>ERRO COMUM</strong>
+                      <p>{currentLesson.studyGuide.commonMistake}</p>
+                    </aside>
                   </div>
-                  <Link
-                    className="lesson-video-reference-link"
-                    href={currentLesson.videoReference.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={`Abrir ${currentLesson.videoReference.title} no YouTube`}
-                  >
-                    Assistir à playlist
-                    <ChevronRight size={16} />
-                  </Link>
+                  <div className="lesson-written-guide-practice">
+                    <Target size={17} aria-hidden="true" />
+                    <div>
+                      <strong>PRÁTICA ORIENTADA</strong>
+                      <p>{currentLesson.studyGuide.guidedPractice}</p>
+                    </div>
+                  </div>
                 </section>
               )}
               <section className="lesson-objectives">

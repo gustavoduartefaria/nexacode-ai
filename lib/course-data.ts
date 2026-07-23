@@ -4,6 +4,7 @@ import type {
   Difficulty,
   LanguageId,
   Lesson,
+  LessonStudyGuide,
   ProgrammingLanguage,
 } from "./course-types";
 
@@ -12,38 +13,347 @@ export type {
   Difficulty,
   LanguageId,
   Lesson,
-  LessonVideoReference,
+  LessonStudyGuide,
   ProgrammingLanguage,
 } from "./course-types";
 
-const cursoEmVideoPlaylist =
-  "https://www.youtube.com/playlist?list=PLHz_AreHm4dlsK3Nr9GVvXCbpQyHQl1o1";
-
-const javascriptVideoCoverage: Record<string, string> = {
-  variaveis: "Módulo B · variáveis, identificadores e atribuição de valores.",
-  tipos: "Módulo B · tipos primitivos, conversão e tratamento de dados.",
-  operadores: "Módulo B · operadores aritméticos, relacionais e lógicos.",
-  condicionais: "Módulo D · condições simples, compostas e aninhadas.",
-  loops: "Módulo E · repetições com while, do...while e for.",
-  erros: "Base consolidada da playlist, ampliada pelo NexaCode com validação e tratamento de falhas.",
-  "funcoes-base": "Módulo F · funções, parâmetros, retorno e decomposição de problemas.",
-  "arrow-functions": "Fundamentos de funções da playlist, estendidos para a sintaxe moderna de arrow functions.",
-  "escopo-closures": "Fundamentos de variáveis e funções, aprofundados com escopo léxico e closures.",
-  arrays: "Módulo F · variáveis compostas e operações fundamentais com arrays.",
-  "metodos-array": "Base de arrays da playlist, ampliada com map, filter e reduce.",
-  objetos: "Objetos apresentados na base de JavaScript, aprofundados com desestruturação e contratos.",
-  "dom-selecao": "Módulo C · introdução ao DOM e seleção de elementos da página.",
-  eventos: "Módulo C · eventos, interação e manipulação do DOM.",
-  formularios: "DOM e eventos aplicados a formulários com validação e estados de erro.",
-  promises: "Extensão NexaCode após a base da playlist: concorrência e estados assíncronos.",
-  "async-await": "Extensão NexaCode após a base da playlist: composição assíncrona com async/await.",
-  fetch: "Extensão NexaCode após a base da playlist: HTTP, APIs e tratamento de respostas.",
-  modulos: "Organização profissional do código após consolidar os fundamentos da playlist.",
-  classes: "Objetos e funções evoluídos para modelagem com classes e responsabilidades explícitas.",
-  imutabilidade: "Arrays e objetos aprofundados com atualização previsível de estado.",
-  "projeto-tarefas": "Aplicação prática dos módulos de DOM, eventos, condições, arrays e funções.",
-  "projeto-api": "Projeto avançado que acrescenta APIs e assincronismo à base da playlist.",
-  "projeto-final": "Síntese da formação: fundamentos da playlist e engenharia de produto do NexaCode.",
+const javascriptStudyGuides: Record<string, LessonStudyGuide> = {
+  variaveis: {
+    title: "Referências, estado e intenção",
+    overview:
+      "Uma variável associa um nome a um valor dentro de um escopo. const impede a reatribuição da referência, mas não torna objetos imutáveis; let deve aparecer apenas quando a troca de valor faz parte do modelo.",
+    keyPoints: [
+      "Declare no menor escopo possível e inicialize perto do uso.",
+      "Prefira const e use let para estado que realmente evolui.",
+      "Nomes devem revelar unidade, finalidade e significado do valor.",
+    ],
+    commonMistake:
+      "Confundir const com imutabilidade profunda e alterar objetos compartilhados sem perceber.",
+    guidedPractice:
+      "Modele o estado de uma matrícula com constantes para identidade e uma variável para o progresso. Depois identifique quais mudanças são permitidas.",
+  },
+  tipos: {
+    title: "Valores, tipos e conversões",
+    overview:
+      "JavaScript possui valores primitivos e valores por referência. O tipo determina quais operações fazem sentido, enquanto conversões implícitas podem produzir resultados válidos sintaticamente, mas incorretos para o domínio.",
+    keyPoints: [
+      "Diferencie ausência intencional com null de valor ainda não definido.",
+      "Converta entradas textuais explicitamente antes de calcular.",
+      "Valide Number.isNaN e limites do domínio após a conversão.",
+    ],
+    commonMistake:
+      "Confiar somente em typeof, especialmente para null, arrays e valores numéricos inválidos.",
+    guidedPractice:
+      "Receba idade, nome e aceite dos termos como texto, converta cada campo e produza uma lista de erros específicos.",
+  },
+  operadores: {
+    title: "Expressões previsíveis",
+    overview:
+      "Operadores formam expressões que calculam ou decidem. A legibilidade depende de precedência explícita, comparações estritas e uso consciente do curto-circuito lógico.",
+    keyPoints: [
+      "Use === e !== para evitar coerções silenciosas.",
+      "Agrupe expressões complexas com parênteses e nomes intermediários.",
+      "Diferencie || de ?? quando zero e string vazia são valores válidos.",
+    ],
+    commonMistake:
+      "Usar || para valores padrão e substituir acidentalmente 0, false ou uma string vazia válida.",
+    guidedPractice:
+      "Calcule o acesso a um curso combinando idade, assinatura e autorização, nomeando cada condição antes da expressão final.",
+  },
+  condicionais: {
+    title: "Decisões como regras de domínio",
+    overview:
+      "Uma condicional deve expressar uma regra observável, não apenas controlar linhas de código. Casos inválidos tratados primeiro reduzem aninhamentos e deixam o caminho principal evidente.",
+    keyPoints: [
+      "Transforme condições extensas em variáveis ou funções booleanas.",
+      "Use guard clauses para rejeitar estados inválidos cedo.",
+      "Garanta que todos os casos relevantes tenham comportamento definido.",
+    ],
+    commonMistake:
+      "Criar árvores profundas de if/else que misturam validação, cálculo e apresentação.",
+    guidedPractice:
+      "Implemente uma política de certificado considerando progresso, nota e situação da conta, incluindo mensagens para cada impedimento.",
+  },
+  loops: {
+    title: "Iteração com término e propósito",
+    overview:
+      "Todo laço precisa de uma coleção ou condição, uma operação por passo e uma garantia de término. Escolha a construção que melhor comunica se você percorre valores, índices ou repete até uma condição.",
+    keyPoints: [
+      "Use for...of para valores e for clássico quando o índice fizer parte da regra.",
+      "Defina a condição de parada antes de escrever o corpo.",
+      "Evite alterar a coleção que está sendo percorrida sem uma estratégia explícita.",
+    ],
+    commonMistake:
+      "Criar laços infinitos ou erros de limite por atualizar o contador no lugar errado.",
+    guidedPractice:
+      "Percorra tentativas de um exercício, interrompa na primeira solução correta e registre quantas avaliações foram necessárias.",
+  },
+  erros: {
+    title: "Falhas explícitas e recuperáveis",
+    overview:
+      "Erros representam operações que não conseguiram cumprir seu contrato. Valide entradas conhecidas e use exceções para interromper fluxos que não podem continuar com segurança.",
+    keyPoints: [
+      "Lance Error com mensagem e contexto úteis.",
+      "Capture a falha apenas onde existe uma resposta possível.",
+      "Nunca esconda um erro com catch vazio.",
+    ],
+    commonMistake:
+      "Usar try/catch ao redor de grandes blocos e perder qual operação realmente falhou.",
+    guidedPractice:
+      "Crie um parser de nota que diferencie campo vazio, formato inválido e valor fora do intervalo.",
+  },
+  "funcoes-base": {
+    title: "Contratos pequenos e reutilizáveis",
+    overview:
+      "Uma função é uma unidade de comportamento com entradas, resultado e efeitos observáveis. Funções pequenas são mais fáceis de nomear, testar e combinar.",
+    keyPoints: [
+      "Defina o contrato antes da implementação.",
+      "Prefira devolver valores em vez de alterar estado externo.",
+      "Separe cálculo, entrada de dados e apresentação.",
+    ],
+    commonMistake:
+      "Criar funções que fazem várias tarefas e dependem de variáveis globais ocultas.",
+    guidedPractice:
+      "Separe o cálculo de média, a classificação do resultado e a montagem da mensagem em três funções testáveis.",
+  },
+  "arrow-functions": {
+    title: "Funções como valores",
+    overview:
+      "Arrow functions oferecem sintaxe compacta e capturam this do escopo externo. São adequadas para callbacks e transformações pequenas, mas não substituem toda declaração de função.",
+    keyPoints: [
+      "Use retorno implícito apenas em expressões curtas.",
+      "Lembre que arrow functions não possuem this nem arguments próprios.",
+      "Escolha a forma que deixa intenção e depuração mais claras.",
+    ],
+    commonMistake:
+      "Usar arrow function como método quando o comportamento depende do this do objeto.",
+    guidedPractice:
+      "Reescreva callbacks de ordenação e mapeamento com arrows e explique onde uma função tradicional continua melhor.",
+  },
+  "escopo-closures": {
+    title: "Memória lexical e encapsulamento",
+    overview:
+      "Closures surgem quando uma função preserva acesso ao ambiente em que foi criada. Elas permitem encapsular estado, mas também podem manter dados vivos por mais tempo do que o necessário.",
+    keyPoints: [
+      "Escopo é definido pela posição do código, não pelo local da chamada.",
+      "Cada execução pode criar um ambiente fechado independente.",
+      "Observe referências retidas em callbacks de longa duração.",
+    ],
+    commonMistake:
+      "Compartilhar a mesma variável mutável entre callbacks e esperar estados independentes.",
+    guidedPractice:
+      "Construa uma fábrica de contadores de progresso e prove que duas instâncias não compartilham o mesmo estado.",
+  },
+  arrays: {
+    title: "Sequências, índices e mutabilidade",
+    overview:
+      "Arrays modelam coleções ordenadas. A escolha entre alterar a coleção e criar uma nova deve ser deliberada, pois referências compartilhadas tornam mutações observáveis em vários pontos.",
+    keyPoints: [
+      "Valide índices e trate coleção vazia.",
+      "Diferencie métodos mutáveis de métodos que retornam nova coleção.",
+      "Copiar o array não copia profundamente os objetos internos.",
+    ],
+    commonMistake:
+      "Usar sort diretamente e modificar uma coleção que deveria permanecer intacta.",
+    guidedPractice:
+      "Implemente inclusão, remoção e ordenação de aulas mantendo uma versão original para comparação.",
+  },
+  "metodos-array": {
+    title: "Pipelines de transformação",
+    overview:
+      "map transforma, filter seleciona e reduce acumula. Uma sequência bem construída descreve o fluxo de dados sem efeitos colaterais no meio da operação.",
+    keyPoints: [
+      "O callback de map deve devolver um valor para cada entrada.",
+      "filter preserva itens cuja condição resulta em verdadeiro.",
+      "reduce exige acumulador inicial compatível com o resultado.",
+    ],
+    commonMistake:
+      "Usar map apenas para efeitos colaterais ou criar um reduce impossível de compreender.",
+    guidedPractice:
+      "Filtre alunos ativos, extraia suas notas e calcule a média com etapas nomeadas e casos para lista vazia.",
+  },
+  objetos: {
+    title: "Modelagem de entidades",
+    overview:
+      "Objetos agrupam propriedades relacionadas e expressam registros do domínio. Desestruturação reduz repetição, enquanto valores padrão tornam entradas parciais mais previsíveis.",
+    keyPoints: [
+      "Modele propriedades que pertencem à mesma entidade.",
+      "Use optional chaining somente quando a ausência for realmente permitida.",
+      "Evite objetos genéricos que misturam dados de domínios diferentes.",
+    ],
+    commonMistake:
+      "Acessar cadeias profundas sem validar a estrutura recebida.",
+    guidedPractice:
+      "Modele uma aula com metadados, progresso e autor; depois crie uma função que produza um resumo sem alterar o objeto.",
+  },
+  "dom-selecao": {
+    title: "DOM como árvore de interface",
+    overview:
+      "O DOM representa o documento como uma árvore de nós. Selecionar um elemento é apenas o começo: o código precisa considerar ausência, semântica e sincronização entre estado e interface.",
+    keyPoints: [
+      "Prefira seletores estáveis e específicos ao comportamento.",
+      "Trate querySelector como resultado possivelmente nulo.",
+      "Atualize propriedades apropriadas em vez de concatenar HTML não confiável.",
+    ],
+    commonMistake:
+      "Usar innerHTML com conteúdo do usuário e abrir espaço para injeção de código.",
+    guidedPractice:
+      "Selecione uma lista de aulas, crie os itens com createElement e mostre um estado vazio quando não houver resultados.",
+  },
+  eventos: {
+    title: "Interações e ciclo de vida",
+    overview:
+      "Eventos comunicam que algo ocorreu na interface. O handler deve interpretar o evento, atualizar o estado necessário e produzir uma resposta previsível sem acumular listeners.",
+    keyPoints: [
+      "Use o objeto event para obter alvo e dados da interação.",
+      "Aplique delegação quando muitos elementos compartilham comportamento.",
+      "Remova listeners persistentes quando o componente deixa de existir.",
+    ],
+    commonMistake:
+      "Registrar o mesmo listener várias vezes e executar uma ação duplicada a cada clique.",
+    guidedPractice:
+      "Implemente uma lista com botões de concluir usando um único listener no elemento pai.",
+  },
+  formularios: {
+    title: "Dados confiáveis desde a entrada",
+    overview:
+      "Formulários convertem intenção humana em dados. Validação no cliente melhora a experiência, mas o servidor continua responsável por autorizar e validar toda operação.",
+    keyPoints: [
+      "Associe labels aos campos e mensagens ao erro correspondente.",
+      "Normalize valores antes de validar.",
+      "Preserve os dados válidos quando uma submissão falhar.",
+    ],
+    commonMistake:
+      "Confiar apenas no atributo required e enviar dados sem validação no servidor.",
+    guidedPractice:
+      "Crie um cadastro com nome, e-mail e senha, retornando erros por campo e um resumo acessível.",
+  },
+  promises: {
+    title: "Estados de uma operação futura",
+    overview:
+      "Uma Promise representa um resultado que pode estar pendente, realizado ou rejeitado. Encadeamentos devem devolver valores ou novas promises para preservar a ordem e propagar falhas.",
+    keyPoints: [
+      "Toda operação assíncrona deve possuir caminho de sucesso e falha.",
+      "Retorne a Promise criada dentro de then.",
+      "Use finally apenas para limpeza que independe do resultado.",
+    ],
+    commonMistake:
+      "Criar uma Promise manual ao redor de uma API que já devolve Promise.",
+    guidedPractice:
+      "Modele o carregamento de uma aula com estados loading, success e error e garanta a limpeza do indicador.",
+  },
+  "async-await": {
+    title: "Fluxos assíncronos legíveis",
+    overview:
+      "async/await descreve dependências assíncronas em sequência. Operações independentes podem iniciar juntas; operações dependentes devem aguardar o resultado anterior.",
+    keyPoints: [
+      "Use try/catch no limite em que a falha pode ser tratada.",
+      "Agrupe tarefas independentes com Promise.all.",
+      "Evite await sequencial quando não existe dependência.",
+    ],
+    commonMistake:
+      "Executar requisições independentes uma após outra e aumentar desnecessariamente a latência.",
+    guidedPractice:
+      "Carregue perfil e progresso em paralelo, combine os resultados e apresente falha parcial de modo compreensível.",
+  },
+  fetch: {
+    title: "HTTP não é apenas JSON",
+    overview:
+      "fetch resolve mesmo quando o servidor retorna vários erros HTTP. O cliente deve verificar status, interpretar o corpo com segurança e limitar operações que podem ficar pendentes.",
+    keyPoints: [
+      "Teste response.ok antes de confiar no corpo.",
+      "Valide a estrutura do JSON recebido.",
+      "Use AbortController para cancelamento e tempo limite.",
+    ],
+    commonMistake:
+      "Tratar qualquer resposta resolvida como sucesso e ignorar status 400 ou 500.",
+    guidedPractice:
+      "Implemente uma função de consulta de curso com timeout, mensagens por status e validação mínima do objeto retornado.",
+  },
+  modulos: {
+    title: "Fronteiras e dependências",
+    overview:
+      "Módulos dividem o sistema em unidades com interface pública explícita. Uma boa fronteira reduz acoplamento e impede que detalhes internos se espalhem pela aplicação.",
+    keyPoints: [
+      "Exporte apenas o contrato necessário.",
+      "Evite dependências circulares.",
+      "Agrupe código por responsabilidade de domínio, não apenas por tipo de arquivo.",
+    ],
+    commonMistake:
+      "Criar um módulo utilitário central que conhece todo o sistema e se torna impossível de testar isoladamente.",
+    guidedPractice:
+      "Separe regras de progresso, persistência e interface em módulos e desenhe as dependências permitidas entre eles.",
+  },
+  classes: {
+    title: "Estado protegido por invariantes",
+    overview:
+      "Classes podem reunir estado e comportamento quando uma entidade possui ciclo de vida e invariantes. Para simples transformação de dados, funções e objetos costumam ser mais diretos.",
+    keyPoints: [
+      "Valide invariantes no construtor e nos métodos.",
+      "Mantenha a interface pública pequena.",
+      "Prefira composição quando herança não representa uma relação real.",
+    ],
+    commonMistake:
+      "Criar classes apenas para armazenar dados, acrescentando complexidade sem proteger comportamento.",
+    guidedPractice:
+      "Modele uma matrícula que impeça progresso negativo e não permita emitir certificado antes da conclusão.",
+  },
+  imutabilidade: {
+    title: "Mudanças rastreáveis de estado",
+    overview:
+      "Imutabilidade significa produzir um novo estado em vez de alterar silenciosamente o anterior. Isso facilita comparação, histórico, depuração e atualização de interfaces.",
+    keyPoints: [
+      "Use spread conscientemente: a cópia é superficial.",
+      "Atualize apenas o ramo necessário da estrutura.",
+      "Não confunda imutabilidade com proibição de todo estado.",
+    ],
+    commonMistake:
+      "Copiar o objeto externo e modificar um objeto interno ainda compartilhado.",
+    guidedPractice:
+      "Atualize o progresso de uma aula dentro de uma trilha sem modificar nenhum objeto da versão anterior.",
+  },
+  "projeto-tarefas": {
+    title: "Arquitetura de uma aplicação interativa",
+    overview:
+      "Um gerenciador de tarefas combina estado, renderização, eventos, validação e persistência. Separar essas responsabilidades evita que cada clique dependa diretamente do HTML inteiro.",
+    keyPoints: [
+      "Defina um modelo de tarefa com identificador estável.",
+      "Centralize mudanças de estado em operações nomeadas.",
+      "Renderize estados vazio, carregando e erro.",
+    ],
+    commonMistake:
+      "Usar o texto visível como identificador e quebrar edição, duplicidade ou remoção.",
+    guidedPractice:
+      "Desenhe o fluxo adicionar → validar → persistir → renderizar e escreva um teste para cada transição.",
+  },
+  "projeto-api": {
+    title: "Dados remotos com resiliência",
+    overview:
+      "Aplicações orientadas a API precisam representar latência, falhas e dados incompletos. A interface deve continuar compreensível durante cada estado da requisição.",
+    keyPoints: [
+      "Modele carregamento, sucesso vazio, sucesso com dados e falha.",
+      "Cancele requisições obsoletas.",
+      "Não misture o formato externo da API com o modelo interno sem adaptação.",
+    ],
+    commonMistake:
+      "Exibir dados da última consulta depois que uma resposta mais lenta chega fora de ordem.",
+    guidedPractice:
+      "Implemente uma pesquisa que cancele a consulta anterior e converta a resposta externa para um modelo local validado.",
+  },
+  "projeto-final": {
+    title: "Entrega de produto verificável",
+    overview:
+      "O projeto final integra conteúdo, interface, dados e qualidade operacional. A entrega só está pronta quando funciona em diferentes telas, possui estados de falha e pode ser reproduzida por outra pessoa.",
+    keyPoints: [
+      "Defina critérios de aceite antes de programar.",
+      "Teste fluxos completos e casos de fronteira.",
+      "Documente decisões, execução local e limitações conhecidas.",
+    ],
+    commonMistake:
+      "Investir apenas na aparência e deixar navegação, acessibilidade ou tratamento de erro sem validação.",
+    guidedPractice:
+      "Crie uma matriz de aceite do portfólio cobrindo conteúdo, responsividade, acessibilidade, desempenho e publicação.",
+  },
 };
 
 const lesson = (
@@ -95,16 +405,7 @@ const lesson = (
           ? "Analise custo de tempo e memória, identifique alocações e evite trabalho repetido em loops ou renderizações. Meça antes de otimizar."
           : "Priorize correção e legibilidade; depois observe quantas vezes cada operação é executada e quais dados permanecem em memória.",
     },
-    videoReference: {
-      title: "Curso de JavaScript",
-      creator: "Curso em Vídeo · Prof. Gustavo Guanabara",
-      url: cursoEmVideoPlaylist,
-      coverage:
-        javascriptVideoCoverage[id] ??
-        "Referência audiovisual para revisar os fundamentos relacionados a esta aula.",
-      note:
-        "Material externo complementar. A explicação, o código, a micromissão e o checkpoint desta aula são conteúdos próprios do NexaCode AI.",
-    },
+    studyGuide: javascriptStudyGuides[id],
     quiz: { question, options, answer, explanation },
   };
 };

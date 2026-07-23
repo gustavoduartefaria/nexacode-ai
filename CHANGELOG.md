@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.4.0 — JavaScript em conteúdo escrito
+
+- Substitui a referência em vídeo por material escrito original nas 24 aulas de JavaScript.
+- Adiciona visão técnica, pontos-chave, erro comum e prática orientada específicos para cada aula.
+- Remove a dependência de playlist externa da experiência de estudo.
+- Mantém teoria, código, micromissão, revisão de engenharia, checkpoint e progresso existentes.
+
 ## 4.3.3 — Trilha JavaScript em vídeo
 
 - Integra a playlist pública do Curso em Vídeo como referência complementar nas 24 aulas de JavaScript.

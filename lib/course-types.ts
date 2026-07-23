@@ -14,12 +14,12 @@ export type ProgrammingLanguage = {
   runtimeLabel: string;
 };
 
-export type LessonVideoReference = {
+export type LessonStudyGuide = {
   title: string;
-  creator: string;
-  url: string;
-  coverage: string;
-  note: string;
+  overview: string;
+  keyPoints: string[];
+  commonMistake: string;
+  guidedPractice: string;
 };
 
 export type Lesson = {
@@ -40,7 +40,7 @@ export type Lesson = {
     verification: string;
     performance: string;
   };
-  videoReference?: LessonVideoReference;
+  studyGuide?: LessonStudyGuide;
   quiz: {
     question: string;
     options: string[];

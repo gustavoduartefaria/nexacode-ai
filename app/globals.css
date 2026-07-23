@@ -2816,81 +2816,119 @@ main {
   line-height: 1.55;
 }
 
-.lesson-video-reference {
+.lesson-written-guide {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 13px;
-  align-items: center;
   padding: 15px;
-  border: 1px solid rgba(255, 88, 88, 0.18);
+  border: 1px solid rgba(87, 242, 204, 0.16);
   border-radius: 11px;
   background:
-    radial-gradient(circle at 0 50%, rgba(255, 68, 68, 0.1), transparent 34%),
+    radial-gradient(circle at 0 0, rgba(87, 242, 204, 0.09), transparent 38%),
     rgba(255, 255, 255, 0.018);
 }
 
-.lesson-video-reference-icon {
+.lesson-written-guide-heading {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+}
+
+.lesson-written-guide-icon {
   display: grid;
   width: 42px;
   height: 42px;
+  flex: 0 0 auto;
   place-items: center;
-  border: 1px solid rgba(255, 94, 94, 0.22);
+  border: 1px solid rgba(87, 242, 204, 0.2);
   border-radius: 12px;
-  background: rgba(255, 65, 65, 0.1);
-  color: #ff7979;
+  background: rgba(87, 242, 204, 0.08);
+  color: var(--cyan);
 }
 
-.lesson-video-reference span {
-  color: #ff8989;
+.lesson-written-guide span,
+.lesson-written-guide strong {
+  color: #76e9cf;
   font-family: var(--font-geist-mono);
   font-size: 8px;
   font-weight: 760;
   letter-spacing: 1.05px;
 }
 
-.lesson-video-reference h3 {
+.lesson-written-guide h3 {
   margin: 5px 0 3px;
   color: #e7ebf2;
   font-size: 11px;
 }
 
-.lesson-video-reference p,
-.lesson-video-reference small {
-  display: block;
+.lesson-written-guide p {
   margin: 0;
   color: #8f9baa;
+  font-size: 9px;
+  line-height: 1.62;
+}
+
+.lesson-written-guide-overview {
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.lesson-written-guide-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 9px;
+}
+
+.lesson-written-guide-grid > div,
+.lesson-written-guide-grid aside,
+.lesson-written-guide-practice {
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.014);
+}
+
+.lesson-written-guide-grid ul {
+  display: grid;
+  gap: 6px;
+  margin: 9px 0 0;
+  padding-left: 15px;
+  color: #8996a6;
   font-size: 8.5px;
   line-height: 1.55;
 }
 
-.lesson-video-reference small {
-  margin-top: 4px;
-  color: #697586;
+.lesson-written-guide-grid aside {
+  border-color: rgba(255, 169, 91, 0.1);
+  background: rgba(255, 169, 91, 0.025);
 }
 
-.lesson-video-reference-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 8px 10px;
-  border: 1px solid rgba(255, 103, 103, 0.2);
-  border-radius: 8px;
-  background: rgba(255, 73, 73, 0.07);
-  color: #ff9595;
-  font-size: 8px;
-  font-weight: 700;
-  text-decoration: none;
-  white-space: nowrap;
-  transition:
-    transform 160ms ease,
-    border-color 160ms ease,
-    background 160ms ease;
+.lesson-written-guide-grid aside strong {
+  color: #d9aa73;
 }
 
-.lesson-video-reference-link:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255, 126, 126, 0.4);
-  background: rgba(255, 73, 73, 0.12);
+.lesson-written-guide-grid aside p {
+  margin-top: 8px;
+}
+
+.lesson-written-guide-practice {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  border-color: rgba(139, 124, 255, 0.12);
+  background: rgba(139, 124, 255, 0.025);
+}
+
+.lesson-written-guide-practice > svg {
+  flex: 0 0 auto;
+  color: #a69aff;
+}
+
+.lesson-written-guide-practice strong {
+  color: #aaa0f0;
+}
+
+.lesson-written-guide-practice p {
+  margin-top: 6px;
 }
 
 .lesson-objectives {
@@ -3942,13 +3980,8 @@ main {
     grid-template-columns: 1fr;
   }
 
-  .lesson-video-reference {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  .lesson-video-reference-link {
-    grid-column: 1 / -1;
-    justify-content: center;
+  .lesson-written-guide-grid {
+    grid-template-columns: 1fr;
   }
 
   .mission-block {
